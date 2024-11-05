@@ -1,19 +1,15 @@
 package main;
 
+import javax.swing.JTextArea;
+
 public class Asset 
 {
-	public String name;
-	public int xRange;
-	public int yRange;
-	public int amount;
-	public Boolean canRescue;
-	
-	public Asset(String name, int xRange, int yRange, int amount, Boolean canRescue)
-	{
+    public String name;
+    public int amount;
+    public JTextArea myTextArea;
+
+    public Asset(String name, int amount) {
         this.name = name;
-        this.xRange = xRange;
-        this.yRange = yRange;
         this.amount = amount;
-        this.canRescue = canRescue;
-	}
+    }
 }
