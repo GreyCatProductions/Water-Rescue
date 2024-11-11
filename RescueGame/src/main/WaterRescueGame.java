@@ -12,6 +12,7 @@ public class WaterRescueGame extends JFrame
     
     private JButton[][] buttons;
     private int[][] survivors;
+    private Boolean[][] changedButtons;
     private int survivorsSaved = 0;
     private int usesLeft;
     private Boolean[][] finalButtons; //Buttons that shall not be changed by reset anymore
@@ -29,7 +30,7 @@ public class WaterRescueGame extends JFrame
     
     private ImageIcon gameIcon;
     
-    public WaterRescueGame()
+    public WaterRescueGame() //Prepares frame and opens main menu
     {
     	frame = this;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,44 +54,83 @@ public class WaterRescueGame extends JFrame
     }
     
     //Windows
-    public void CreateMainMenu() 
+    public void CreateMainMenu() //Switches to main menu
     {
         frame.getContentPane().removeAll(); 
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
         centerPanel.setBackground(Color.black); 
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(Color.black);
 
+        JTextField title = new JTextField(20);
+        title.setBackground(Color.black);
+        title.setEditable(false);
+        title.setHorizontalAlignment(JTextField.CENTER);
+        title.setText("WATER RESCUE OPERATOR");
+        Font currentFont = title.getFont();
+        Font newFont = currentFont.deriveFont(64f);
+        title.setFont(newFont);
+        title.setBorder(null);
+
+        titlePanel.add(title);
+        
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.darkGray);
+        
+        JTextField instructionText = new JTextField(15);
+        instructionText.setEditable(false);
+        instructionText.setBackground(Color.GRAY);
+        instructionText.setHorizontalAlignment(JTextField.CENTER); 
+        instructionText.setText("ENTER YOUR NAME");
+        instructionText.setBorder(null);
+        instructionText.setBackground(Color.DARK_GRAY);
+        instructionText.setForeground(Color.WHITE);
 
         JButton button = new JButton("Start Game");
         button.setPreferredSize(standardButtonSize);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField textField = new JTextField(15);
-
-        button.addActionListener(new ActionListener() {
+        JTextField enterField = new JTextField(15);
+        enterField.setHorizontalAlignment(JTextField.CENTER); 
+        
+        button.addActionListener(new ActionListener() 
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String userInput = textField.getText(); 
-                JOptionPane.showMessageDialog(frame, "Playing as: " + userInput); 
-                CreateLevelSelection();
+            public void actionPerformed(ActionEvent e) 
+            {
+                String userInput = enterField.getText(); 
+                if (userInput.length() >= 3 && userInput.length() <= 20 && userInput.matches("[a-zA-Z]+")) 
+                {
+                    JOptionPane.showMessageDialog(frame, "Playing as: " + userInput);
+	                CreateLevelSelection();
+                }
+                else
+                {
+                	JOptionPane.showMessageDialog(frame, "Name must be 3-20 characters and contain only letters.");
+                	enterField.setText("");
+                }
             }
         });
 
-        panel.add(textField);
+        panel.add(instructionText);
+        panel.add(Box.createVerticalStrut(10)); 
+        panel.add(enterField);
+        panel.add(Box.createVerticalStrut(10)); 
         panel.add(button);
         centerPanel.add(panel);
 
+        frame.add(titlePanel, BorderLayout.NORTH);
         frame.add(centerPanel, BorderLayout.CENTER);
         
         frame.revalidate(); 
         frame.repaint();   
     }
 
-    public void CreateLevelSelection() 
+    public void CreateLevelSelection() //Switches to level selection 
     {
         frame.getContentPane().removeAll(); 
 
@@ -209,7 +249,7 @@ public class WaterRescueGame extends JFrame
         frame.repaint();  
     }
     
-    private LinkedList<Scenario> createScenarios()
+    private LinkedList<Scenario> createScenarios() //creates scenarios for level selection
     {
     	LinkedList<Scenario> scenarios = new LinkedList<Scenario>();
         
@@ -231,21 +271,23 @@ public class WaterRescueGame extends JFrame
     	return scenarios;
     }
 
-    public void CreateMainGame(Scenario scenario)
+    public void CreateMainGame(Scenario scenario) //Switches to main game with a scenario
     {
         frame.getContentPane().removeAll(); 
 
         buttons = new JButton[scenario.size][scenario.size];
         survivors = new int[scenario.size][scenario.size];
         finalButtons = new Boolean[scenario.size][scenario.size];
+        changedButtons = new Boolean[scenario.size][scenario.size];
+        
         for (int i = 0; i < scenario.size; i++) {
             for (int j = 0; j < scenario.size; j++) {
                 finalButtons[i][j] = false;
+                changedButtons[i][j] = false;
             }
         }
         
         int assetPanelWidth = (int)(frame.getWidth() * 0.2f);
-
         assetPanel = createAssetPanel(assetPanelWidth);
         JPanel mainGamePanel = createMainGamePanel(scenario);
         
@@ -273,7 +315,8 @@ public class WaterRescueGame extends JFrame
     }
 
     //Main Game UI management
-    private JPanel createAssetPanel(int width) {
+    private JPanel createAssetPanel(int width) 
+{
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
         assetPanel.setBackground(Color.darkGray);
@@ -282,7 +325,8 @@ public class WaterRescueGame extends JFrame
         return assetPanel;
     }
 
-    private JPanel createMainGamePanel(Scenario scenario) {
+    private JPanel createMainGamePanel(Scenario scenario)
+    {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
         mainGamePanel.setBackground(Color.DARK_GRAY);
 
@@ -324,7 +368,7 @@ public class WaterRescueGame extends JFrame
             JPanel assetWindow = new JPanel();
             assetWindow.setBackground(Color.gray);
             assetWindow.setLayout(new BoxLayout(assetWindow, BoxLayout.Y_AXIS));
-            
+ 
             JTextArea textArea = new JTextArea();
             asset.myTextArea = textArea;
             SetText(asset);
@@ -377,7 +421,7 @@ public class WaterRescueGame extends JFrame
 
             assetWindow.setMaximumSize(new Dimension(width, height));
             assetWindow.setPreferredSize(new Dimension(width, height));
-            assetWindow.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+            assetWindow.setBorder(BorderFactory.createLineBorder(Color.black, 1));
             
             panelToDrawOn.add(assetWindow);
         }
@@ -455,7 +499,7 @@ public class WaterRescueGame extends JFrame
 	
 	                        float noisedValue = radius + radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
 	                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-	                        buttons[x][y].setBackground(new Color(colorValue, 255 - colorValue, 0));
+	                        changeFieldColor(x, y, new Color(colorValue, 255 - colorValue, 0));
                         }
                     }
                 }
@@ -484,19 +528,21 @@ public class WaterRescueGame extends JFrame
                         queue.add(new Point(nx, ny));
 
                         int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-                        buttons[nx][ny].setBackground(new Color(colorValue, 255 - colorValue, 0));
+
+                        changeFieldColor(nx, ny, new Color(colorValue, 255 - colorValue, 0));
                     }
                 }
             }
             
-            for (int i = 0; i < chosenScenario.size; i++) {
-                for (int j = 0; j < chosenScenario.size; j++) {
-                    if (distanceMatrix[i][j] == 0) 
+            for (int x = 0; x < chosenScenario.size; x++) {
+                for (int y = 0; y < chosenScenario.size; y++) {
+                    if (distanceMatrix[x][y] == 0) 
                     {
                     	Random random = new Random();
                         float noisedValue =  radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
                         int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-                        buttons[i][j].setBackground(new Color(colorValue, 255 - colorValue, 0));
+
+                        changeFieldColor(x, y, new Color(colorValue, 255 - colorValue, 0));
                     }
                 }
             }
@@ -526,12 +572,12 @@ public class WaterRescueGame extends JFrame
 	                    }
 	                    else
 	                    {
-	                    	buttons[x][y].setBackground(foundColor);
+	                    	changeFieldColor(x, y, foundColor);
 	                    }
 	    			}
 	    			else
 	    			{
-	    				buttons[x][y].setBackground(searchedColor);
+	    				changeFieldColor(x, y, searchedColor);
 	    			}
 	    			finalButtons[x][y] = true;
 	    		}
@@ -577,7 +623,7 @@ public class WaterRescueGame extends JFrame
     	selectedX = x;
     	selectedY = y;
     	
-		buttons[x][y].setBackground(selectedColor);
+		changeFieldColor(x, y, selectedColor);
     }
     
     private void previewAssetRange(Asset asset)
@@ -590,13 +636,13 @@ public class WaterRescueGame extends JFrame
     	if(asset instanceof Vehicle)
     	{
     		Vehicle vehicle = (Vehicle) asset;
-	    	for(int i = selectedX; i < selectedX + vehicle.xRange; i++)
+	    	for(int x = selectedX; x < selectedX + vehicle.xRange; x++)
 	    	{
-	    		for(int j = selectedY; j < selectedY + vehicle.yRange; j++)
+	    		for(int y = selectedY; y < selectedY + vehicle.yRange; y++)
 	    		{
-	    			if(i < chosenScenario.size && j < chosenScenario.size)
+	    			if(x < chosenScenario.size && y < chosenScenario.size)
 	    			{
-	        			buttons[i][j].setBackground(selectedColor);
+	        			changeFieldColor(x, y, selectedColor);
 	    			}
 	    		}
 	    	}
@@ -612,28 +658,37 @@ public class WaterRescueGame extends JFrame
                     if (x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
                         Math.abs(dx) + Math.abs(dy) <= sonar.radius) 
                     {                 
-                    	buttons[x][y].setBackground(selectedColor);
+                    	changeFieldColor(x, y, selectedColor);
                     }
                 }
             }
     	}
     }
     
-    private void resetGridColors()
+    private void resetGridColors() //Resets all grid cells that changed and are not in final state
     {
-    	for(int i = 0; i < chosenScenario.size; i++)
+    	for(int i = 0; i < changedButtons.length; i++)
     	{
-        	for(int j = 0; j < chosenScenario.size; j++)
+        	for(int j = 0; j < changedButtons.length; j++)
         	{
-        		if(!finalButtons[i][j])
-        			buttons[i][j].setBackground(seaColor);
-        		else
-        			buttons[i][j].setBackground(searchedColor);
+        		if(changedButtons[i][j])
+        		{
+	        		if(!finalButtons[i][j])
+	        			buttons[i][j].setBackground(seaColor);
+	        		else
+	        			buttons[i][j].setBackground(searchedColor);
+        		}
         	}
     	}
     }
     
-    private void endGame()
+    private void changeFieldColor(int x, int y, Color color) //Paints field to given color and marks it as changed
+    {
+        buttons[x][y].setBackground(color);
+		changedButtons[x][y] = true;
+    }
+    
+    private void endGame() //Enables end screen
     {
     	String title;
     	float ratio = (float) survivorsSaved / chosenScenario.survivors;
