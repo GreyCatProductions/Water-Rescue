@@ -21,6 +21,8 @@ public class WaterRescueGame extends JFrame
     private int selectedY = -1;
     
     JPanel assetPanel;
+    JPanel iconPanel;
+    Set<Thread> activeThreads = new HashSet<>();
     
     Color seaColor = new Color(0, 0, 51);
     Color selectedColor = new Color(0, 0, 200);
@@ -39,16 +41,9 @@ public class WaterRescueGame extends JFrame
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new BorderLayout());
         
-        try 
-        {
-        	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
-	        frame.setIconImage(gameIcon.getImage());
-        }
-        catch (Exception e)
-        {
-        	e.printStackTrace();
-        }
-        
+    	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
+        frame.setIconImage(gameIcon.getImage());
+    
         CreateMainMenu();
         setVisible(true);
     }
@@ -224,7 +219,7 @@ public class WaterRescueGame extends JFrame
 	                          .append("\n(");
 	                if (asset instanceof Vehicle) {
 	                    Vehicle vehicle = (Vehicle) asset;
-	                    assetsInfo.append("Range: ").append(vehicle.xRange).append(" x ").append(vehicle.yRange);
+	                    assetsInfo.append("Range: ");
 	                } else if (asset instanceof Sonar) {
 	                    Sonar sonar = (Sonar) asset;
 	                    assetsInfo.append("Radius: ").append(sonar.radius);
@@ -264,26 +259,36 @@ public class WaterRescueGame extends JFrame
         scenarios.add(new Scenario("Lake", 10, 4, 30,"A harsh storm summoned fast. The fishermen did not have time to leave it. 4 boats and 30 people are missing."
         		+ " The local fire department gave you all the ressources it has. Its not much but its all they have.",      		
         		new Asset[]{
-        		new Vehicle ("Small Airtanker", 4, 3, 2, false, "Searches a small area and marks found survivors"),
-        		new Vehicle ("Large Aitranker", 1, 5, 2, false, "Searches a big area and marks found survivors"), 
-        		new Vehicle ("Dinghie", 5, 1, 1, true, "Small but fast. Rescues survivors"),
-        		new Sonar ("Short Range Sonar Buoy", 2, 5, 0.3f, "Uses sonar to listen for survivors. Green = loud, Red = silence")
+        		new Vehicle ("Small Airtanker", 2, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a small area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
+        		
+        		new Vehicle ("Local Pilot", 1, false, new CoordinateStep[] {new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false), new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false)
+        				}, false, "Hobby pilot offers to search. But he will not change his course.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
+        		
+        		new Vehicle ("Large Aitranker", 1, true, new CoordinateStep[] {new CoordinateStep(3, 4, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/big airtanker.png"))), 
+        		
+        		new Vehicle ("Dinghie", 5, true, new CoordinateStep[] {new CoordinateStep(1, 1, false)}, true, "Small but fast. Rescues survivors", new ImageIcon(getClass().getResource("/main/icons/dinghie.png"))),
+        		new Sonar ("Short Range Sonar Buoy", 2, 5, 0.4f, "Uses sonar to listen for survivors. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
         }));
         
         scenarios.add(new Scenario("Bay", 15, 5, 40,"The calm waters of the bay were quickly turned into a dangerous trap when an unexpected fog rolled in. "
         		+ "5 groups of recreational sailors are missing. The coast guard has mobilized what they can, but time is running out as the visibility decreases.",
         		new Asset[]{
-        				new Vehicle ("Oiltanker", 1, 15, 1, false, "An Oiltanker passes the water. We can ask the crew to choose a certain route"), 
-                		new Vehicle ("Scoutplane", 2, 2, 5, false, "Searches a big area and marks found survivors"), 
-                		new Vehicle ("Dinghie", 4, 1, 1, true, "Small but fast. Rescues survivors"),
-                		new Vehicle ("Rescue Ship", 3, 3, 3, true, "Ship specialized on rescue operations. Rescues survivors."),
-                		new Sonar ("Sonar Buoy V1", 3, 5, 0.3f, "Uses sonar to listen for survivors. Green = loud, Red = silence"),
-                		new Sonar ("Sonar Buoy V2", 1, 8, 0.25f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence")
-        		}));
+        				new Vehicle ("Oiltanker", 1, false, new CoordinateStep[] {new CoordinateStep(15, 1, false)}, true, "An Oiltanker passes the water. We can ask the crew to choose a certain route", gameIcon), 
+               		new Vehicle ("Scoutplane", 3, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))), 
+               		new Vehicle ("Dinghie", 2, true,new CoordinateStep[] {new CoordinateStep(1, 1, false)}, true, "Small but fast. Rescues survivors", new ImageIcon(getClass().getResource("/main/icons/dinghie.png"))),
+               		new Vehicle ("Rescue Ship", 3, true,new CoordinateStep[] {new CoordinateStep(3, 3, false)}, true, "Ship specialized on rescue operations. Rescues survivors.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
+               		new Sonar ("Sonar Buoy V1", 3, 5, 0.3f, "Uses sonar to listen for survivors. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png"))),
+               		new Sonar ("Sonar Buoy V2", 1, 7, 0.25f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
+       		}));
+        
         scenarios.add(new Scenario("Sea", 25, 5, 140,"An unusually strong current has swept away several ships, leaving their crews stranded in the sea. 140 people are missing. We dont know how many ships.", 
         		new Asset[]{}));
+        
         scenarios.add(new Scenario("Shore", 33, 3, 50,"", new Asset[]{}));
-        scenarios.add(new Scenario("Ocean", 40, 3, 50,"", new Asset[]{}));
+        
+        scenarios.add(new Scenario("Ocean", 40, 3, 50,"", new Asset[]{
+        		new Sonar ("Sonar Buoy V5", 1, 15, 0.05f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
+        }));
         
     	
     	return scenarios;
@@ -346,39 +351,68 @@ public class WaterRescueGame extends JFrame
         return assetPanel;
     }
 
-    private JPanel createMainGamePanel(Scenario scenario)
+    private JPanel createMainGamePanel(Scenario scenario) 
     {
-        JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+        JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         mainGamePanel.setBackground(Color.DARK_GRAY);
 
-        JPanel grid = new JPanel();
-        grid.setBackground(Color.black);
-        grid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
-        grid.setLayout(new GridLayout(scenario.size, scenario.size));
-        grid.setPreferredSize(new Dimension((int) (frame.getHeight() * 0.9f), (int) (frame.getHeight() * 0.9f)));
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(Color.DARK_GRAY);
         
-        for(int row = 0; row < scenario.size; row++) {  
-            for(int column = 0; column < scenario.size; column++) {
-            	final int r = row;
-            	final int c = column;
-            	
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension((int) (frame.getHeight() * 0.9f), (int) (frame.getHeight() * 0.9f)));
+
+        JPanel grid = new JPanel();
+        grid.setBackground(Color.BLACK);
+        grid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        grid.setLayout(new GridLayout(scenario.size, scenario.size));
+        grid.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height); 
+
+        JPanel leftPanel = new JPanel(new GridLayout(scenario.size, 1));
+        leftPanel.setBackground(Color.DARK_GRAY);
+        
+        JPanel bottomPanel = new JPanel(new GridLayout(1, scenario.size)); 
+        bottomPanel.setBackground(Color.DARK_GRAY);
+        
+        for (int row = 0; row < scenario.size; row++) 
+        {
+            for (int column = 0; column < scenario.size; column++) 
+            {
+                final int r = row;
+                final int c = column;
+
                 JButton gameField = new JButton();
                 gameField.setBackground(seaColor);
+                gameField.setToolTipText("AREA: (" + r + ", " + c+ ")");
+                
                 grid.add(gameField);
                 buttons[column][row] = gameField;
-                
-                gameField.addActionListener(new ActionListener() {
+
+                gameField.addActionListener(new ActionListener() 
+                {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) 
+                    {
                         selectButton(c, r);
                     }
                 });
             }
         }
+        iconPanel = new JPanel(null); 
+        iconPanel.setOpaque(false); 
+        iconPanel.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height);
 
-        mainGamePanel.add(grid, BorderLayout.CENTER);
+        layeredPane.add(grid, Integer.valueOf(0));
+        layeredPane.add(iconPanel, Integer.valueOf(1)); 
+
+        centerPanel.add(layeredPane, BorderLayout.CENTER);
+        centerPanel.add(leftPanel, BorderLayout.WEST); 
+        centerPanel.add(bottomPanel, BorderLayout.SOUTH);
+        mainGamePanel.add(centerPanel);
+
         return mainGamePanel;
     }
+
 
     private void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
     {
@@ -464,7 +498,7 @@ public class WaterRescueGame extends JFrame
             if (vehicle.canRescue) {
                 textAdd = " X";
             }
-            asset.myTextArea.setText(vehicle.name + textAdd + "\n\nPattern: (" + vehicle.xRange + ", " + vehicle.yRange + ")\nAmount: " + vehicle.amount);
+            asset.myTextArea.setText(vehicle.name + textAdd + "\n\nPattern:\nAmount: " + vehicle.amount);
         } 
         else if (asset instanceof Sonar) {
             Sonar sonar = (Sonar) asset;
@@ -474,19 +508,18 @@ public class WaterRescueGame extends JFrame
     
     private void UseAsset(Asset assetToUse) 
     {
-    	if(assetToUse.amount <= 0)
-    	{
-    		JOptionPane.showMessageDialog(null, "no more uses left for " + assetToUse.name);
-    		return;
-    	}
-    	
-    	usesLeft --;
-    	assetToUse.amount --;
-    	SetText(assetToUse);
-    	
-    	assetPanel.revalidate();
-    	assetPanel.repaint();
-    	
+	    if (assetToUse.amount <= 0) {
+	        JOptionPane.showMessageDialog(null, "No more uses left for " + assetToUse.name);
+	        return;
+	    }
+	
+	    usesLeft--;
+	    assetToUse.amount--;
+	    SetText(assetToUse);
+	
+	    assetPanel.revalidate();
+	    assetPanel.repaint();
+	
         if (assetToUse instanceof Sonar) 
         {
         	Sonar sonar = (Sonar)assetToUse;
@@ -497,6 +530,16 @@ public class WaterRescueGame extends JFrame
             {
                 Arrays.fill(distanceMatrix[i], Integer.MAX_VALUE);
             }
+            
+			Rectangle bounds = buttons[0][0].getBounds();	
+			JLabel vehicleLabel = new JLabel();
+		    vehicleLabel.setIcon(sonar.icon); 
+        	int x_pos = selectedX * bounds.width + (bounds.width - vehicleLabel.getPreferredSize().width) / 2;
+		    int y_pos = selectedY * bounds.height + (bounds.height - vehicleLabel.getPreferredSize().height) / 2;
+        	vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
+	        iconPanel.add(vehicleLabel);
+	        iconPanel.revalidate(); 
+	        iconPanel.repaint();
 
             Queue<Point> queue = new LinkedList<>();
 
@@ -576,48 +619,113 @@ public class WaterRescueGame extends JFrame
                 }
             }
         }
-    	else
-		{
-    		Vehicle vehicle = (Vehicle)assetToUse;
-			for(int x = selectedX; x < selectedX + vehicle.xRange; x++)   
-	    	{
-	    		for(int y = selectedY; y < selectedY + vehicle.yRange; y++)
-	    		{
-	    			if(x >= chosenScenario.size || y >= chosenScenario.size)
-	    				continue;
-	    			if(survivors[x][y] > 0)
-	    			{
-	                    if(vehicle.canRescue)
-	                    {
-	                    	buttons[x][y].setBackground(rescuedColor);
-	                        JOptionPane.showMessageDialog(frame, survivors[x][y] + " people saved."); 
-	                        survivorsSaved += survivors[x][y];
-	                        survivors[x][y] = 0;
-	                        
-	                        if(survivorsSaved == chosenScenario.survivors)
-	                        {
-	                        	endGame();
-	                        }
-	                    }
-	                    else
-	                    {
-	                    	changeFieldColor(x, y, foundColor);
-	                    }
-	    			}
-	    			else
-	    			{
-	    				changeFieldColor(x, y, searchedColor);
-	    			}
-	    			finalButtons[x][y] = true;
-	    		}
-	    	}
-    	}
-    	
-        if(usesLeft <= 0)
+        else 
         {
-        	endGame();
+            Vehicle vehicle = (Vehicle) assetToUse;
+
+            int[] currentPosition = { vehicle.affectedByCoordinates ? selectedX : 0, 
+                                      vehicle.affectedByCoordinates ? selectedY : 0 };
+
+            JLabel vehicleLabel = new JLabel();
+            vehicleLabel.setIcon(vehicle.icon);
+
+            iconPanel.add(vehicleLabel);
+            iconPanel.revalidate();
+            iconPanel.repaint();
+
+            Thread moveThread = new Thread(() -> {
+                try {
+                    activeThreads.add(Thread.currentThread());
+
+                    for (CoordinateStep step : vehicle.movePattern) {
+                        int xToMove = step.x;
+                        int yToMove = step.y;
+
+                        if (!step.noUse) {
+                            int startX = Math.min(currentPosition[0], currentPosition[0] + xToMove);
+                            int endX = Math.max(currentPosition[0], currentPosition[0] + xToMove);
+                            int startY = Math.min(currentPosition[1], currentPosition[1] + yToMove);
+                            int endY = Math.max(currentPosition[1], currentPosition[1] + yToMove);
+
+                            for (int x = startX; x < endX; x++) {
+                                if (x % 2 == 0) { // Left-to-right
+                                    for (int y = startY; y < endY; y++) {
+                                        performVehicleMove(vehicleLabel, vehicle, x, y);
+                                        Thread.sleep(100); 
+                                    }
+                                } else 
+                                {
+                                    for (int y = endY - 1; y >= startY; y--) {
+                                        performVehicleMove(vehicleLabel, vehicle, x, y);
+                                        Thread.sleep(100); 
+
+                                    }
+                                }
+                            }
+                        }
+
+                        currentPosition[0] += xToMove;
+                        currentPosition[1] += yToMove;
+                    }
+                } catch (InterruptedException e) 
+                {
+                    e.printStackTrace();
+                } finally 
+                {
+                    iconPanel.remove(vehicleLabel);
+                    iconPanel.revalidate();
+                    iconPanel.repaint();
+                    activeThreads.remove(Thread.currentThread());
+                    if (usesLeft <= 0 && activeThreads.isEmpty()) {
+                        endGame();
+                    }
+                }
+            });
+
+            moveThread.start();
         }
+
     }
+
+
+private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int y)
+{
+    if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size) 
+    {
+        vehicleLabel.setVisible(false);
+        return;
+    }
+
+    vehicleLabel.setVisible(true);
+
+    Point buttonPosition = buttons[x][y].getLocation();
+    int x_pos = buttonPosition.x + (buttons[x][y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
+    int y_pos = buttonPosition.y + (buttons[x][y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
+    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
+
+    if (survivors[x][y] > 0) {
+        if (vehicle.canRescue) {
+            buttons[x][y].setBackground(rescuedColor);
+            JOptionPane.showMessageDialog(frame, survivors[x][y] + " people saved.");
+            survivorsSaved += survivors[x][y];
+            survivors[x][y] = 0;
+
+            if (survivorsSaved == chosenScenario.survivors) {
+                endGame();
+            }
+        } else {
+            changeFieldColor(x, y, foundColor);
+        }
+    } else {
+        changeFieldColor(x, y, searchedColor);
+    }
+    finalButtons[x][y] = true;
+    try {
+        Thread.sleep(500);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
 
     private void placePeople(Scenario scenario) 
     {
@@ -665,15 +773,37 @@ public class WaterRescueGame extends JFrame
     	if(asset instanceof Vehicle)
     	{
     		Vehicle vehicle = (Vehicle) asset;
-	    	for(int x = selectedX; x < selectedX + vehicle.xRange; x++)
-	    	{
-	    		for(int y = selectedY; y < selectedY + vehicle.yRange; y++)
-	    		{
-	    			if(x < chosenScenario.size && y < chosenScenario.size)
-	    			{
-	        			changeFieldColor(x, y, selectedColor);
-	    			}
-	    		}
+    		
+			int curX = vehicle.affectedByCoordinates ? selectedX : 0;
+			int curY = vehicle.affectedByCoordinates ? selectedY : 0;
+
+			for(CoordinateStep step : vehicle.movePattern)
+			{
+				int xToMove = step.x;
+				int yToMove = step.y;
+				
+				if(!step.noUse)
+				{
+			        int startX = Math.min(curX, curX + xToMove);
+			        int endX = Math.max(curX, curX + xToMove);
+			        int startY = Math.min(curY, curY + yToMove);
+			        int endY = Math.max(curY, curY + yToMove);
+			        
+			        for (int x = startX; x < endX; x++) 
+			        {
+			            for (int y = startY; y < endY; y++) 
+			            {
+			                if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size)
+			                    continue;	
+			    			if(x < chosenScenario.size && y < chosenScenario.size)
+			    			{
+			        			changeFieldColor(x, y, selectedColor);
+			    			}
+						}
+					}
+				}
+				curX += xToMove;
+				curY += yToMove;
 	    	}
     	}
     	else

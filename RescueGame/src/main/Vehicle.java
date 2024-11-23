@@ -1,14 +1,17 @@
 package main;
+import javax.swing.ImageIcon;
 
-public class Vehicle extends Asset {
-    public int xRange;
-    public int yRange;
+public class Vehicle extends Asset 
+{
+    public CoordinateStep[] movePattern;
     public Boolean canRescue;
+    public Boolean affectedByCoordinates; 
 
-    public Vehicle(String name, int amount, int xRange, int yRange, Boolean canRescue, String description) {
-        super(name, amount, description);
-        this.xRange = xRange;
-        this.yRange = yRange;
+    public Vehicle(String name, int amount, Boolean affectedByCoordinates, CoordinateStep[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
+    {
+        super(name, amount, description, icon);
+        this.affectedByCoordinates = affectedByCoordinates;
+        this.movePattern = movePattern;
         this.canRescue = canRescue;
     }
 }
