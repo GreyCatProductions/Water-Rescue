@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import javax.swing.border.Border;
 
 public class WaterRescueGame extends JFrame 
 {
@@ -22,6 +23,8 @@ public class WaterRescueGame extends JFrame
     
     JPanel assetPanel;
     JPanel iconPanel;
+    JLabel xCorVisual;
+    JLabel yCorVisual;
     Set<Thread> activeThreads = new HashSet<>();
     
     Color seaColor = new Color(0, 0, 51);
@@ -37,9 +40,10 @@ public class WaterRescueGame extends JFrame
     	frame = this;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Water Rescue Operator");
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        frame.setUndecorated(true);
         frame.getContentPane().setBackground(Color.black);
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(new BorderLayout());;
         
     	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
         frame.setIconImage(gameIcon.getImage());
@@ -261,7 +265,7 @@ public class WaterRescueGame extends JFrame
         		new Asset[]{
         		new Vehicle ("Small Airtanker", 2, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a small area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
         		
-        		new Vehicle ("Local Pilot", 1, false, new CoordinateStep[] {new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false), new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false)
+        		new Vehicle ("Local Pilot", 1, false, new CoordinateStep[] {new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false), new CoordinateStep(2, 1, false), new CoordinateStep(3, 1, false)
         				}, false, "Hobby pilot offers to search. But he will not change his course.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
         		
         		new Vehicle ("Large Aitranker", 1, true, new CoordinateStep[] {new CoordinateStep(3, 4, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/big airtanker.png"))), 
@@ -273,7 +277,7 @@ public class WaterRescueGame extends JFrame
         scenarios.add(new Scenario("Bay", 15, 5, 40,"The calm waters of the bay were quickly turned into a dangerous trap when an unexpected fog rolled in. "
         		+ "5 groups of recreational sailors are missing. The coast guard has mobilized what they can, but time is running out as the visibility decreases.",
         		new Asset[]{
-        				new Vehicle ("Oiltanker", 1, false, new CoordinateStep[] {new CoordinateStep(15, 1, false)}, true, "An Oiltanker passes the water. We can ask the crew to choose a certain route", gameIcon), 
+        				new Vehicle ("Oiltanker", 1, false, new CoordinateStep[] {new CoordinateStep(15, 1, false)}, true, "An Oiltanker passes the water. We can ask the crew to choose a certain latitude", gameIcon), 
                		new Vehicle ("Scoutplane", 3, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))), 
                		new Vehicle ("Dinghie", 2, true,new CoordinateStep[] {new CoordinateStep(1, 1, false)}, true, "Small but fast. Rescues survivors", new ImageIcon(getClass().getResource("/main/icons/dinghie.png"))),
                		new Vehicle ("Rescue Ship", 3, true,new CoordinateStep[] {new CoordinateStep(3, 3, false)}, true, "Ship specialized on rescue operations. Rescues survivors.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
@@ -287,6 +291,7 @@ public class WaterRescueGame extends JFrame
         scenarios.add(new Scenario("Shore", 33, 3, 50,"", new Asset[]{}));
         
         scenarios.add(new Scenario("Ocean", 40, 3, 50,"", new Asset[]{
+           		new Vehicle ("Rescue Ship", 3, true,new CoordinateStep[] {new CoordinateStep(3, 3, false)}, true, "Ship specialized on rescue operations. Rescues survivors.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
         		new Sonar ("Sonar Buoy V5", 1, 15, 0.05f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
         }));
         
@@ -313,44 +318,87 @@ public class WaterRescueGame extends JFrame
         usesLeft = 0;
         survivorsSaved = 0;
         
-        int assetPanelWidth = (int)(frame.getWidth() * 0.2f);
-        assetPanel = createAssetPanel(assetPanelWidth);
+        int eastPanelWidth = (int)(frame.getWidth() * 0.2f);
+        JPanel eastPanel = createEastPanel(eastPanelWidth);
         JPanel mainGamePanel = createMainGamePanel(scenario);
+        assetPanel = createAssetPanel();
+        JPanel coordinatesPanel = createCoordinatesPanel();
+        eastPanel.add(assetPanel, BorderLayout.CENTER);
+        eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
         
         placePeople(scenario);
         drawAssets(assetPanel, scenario.assets);
 
         frame.add(mainGamePanel, BorderLayout.CENTER);
-        frame.add(assetPanel, BorderLayout.EAST);
-
-        frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int newAssetPanelWidth = (int)(frame.getWidth() * 0.2f);
-                assetPanel.setPreferredSize(new Dimension(newAssetPanelWidth, frame.getHeight()));
-
-                int gridSize = (int) (frame.getHeight() * 0.9f);
-                mainGamePanel.getComponent(0).setPreferredSize(new Dimension(gridSize, gridSize));  
-
-                frame.revalidate();
-            }
-        });
+        frame.add(eastPanel, BorderLayout.EAST);
 
         frame.revalidate(); 
         frame.repaint();  
     }
 
     //Main Game UI management
-    private JPanel createAssetPanel(int width) 
-{
+    private JPanel createEastPanel(int width) 
+    {
         JPanel assetPanel = new JPanel();
-        assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
+        assetPanel.setLayout(new BorderLayout());
         assetPanel.setBackground(Color.darkGray);
         assetPanel.setPreferredSize(new Dimension(width, frame.getHeight()));
         assetPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
         return assetPanel;
     }
+    
+    private JPanel createAssetPanel() 
+    {
+        JPanel assetPanel = new JPanel();
+        assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
+        assetPanel.setBackground(Color.darkGray);
+        return assetPanel;
+    }
+    
+    private JPanel createCoordinatesPanel()
+    {
+    	JPanel coordinatesPanel = new JPanel();
+    	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
+    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getPreferredSize().width, 100));
+    	JLabel topText = new JLabel("SELECTED COORDINATES");
+    	JPanel coordinatesHolder = new JPanel();
+    	coordinatesHolder.setLayout(new FlowLayout(FlowLayout.CENTER));
+    	Font font = new Font("Arial", Font.BOLD, 14);
+    	
+        xCorVisual = new JLabel("X", SwingConstants.CENTER);
+        xCorVisual.setFont(font);
+        xCorVisual.setPreferredSize(new Dimension(50, 50)); 
+        xCorVisual.setOpaque(true); 
+        xCorVisual.setBackground(Color.WHITE);
+        xCorVisual.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
+        yCorVisual = new JLabel("Y", SwingConstants.CENTER); 
+        yCorVisual.setFont(font);
+        yCorVisual.setPreferredSize(new Dimension(50, 50)); 
+        yCorVisual.setOpaque(true); 
+        yCorVisual.setBackground(Color.WHITE);
+        yCorVisual.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+    	
+    	topText.setHorizontalAlignment(SwingConstants.CENTER);
+    	xCorVisual.setHorizontalAlignment(SwingConstants.CENTER);
+    	yCorVisual.setHorizontalAlignment(SwingConstants.CENTER);
+    	
+    	Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
+    	xCorVisual.setBorder(border);
+    	yCorVisual.setBorder(border);
+    	
+    	coordinatesPanel.setBackground(Color.GRAY);
+    	coordinatesHolder.setBackground(Color.GRAY);
+    	topText.setBackground(Color.GRAY);
+    	
+    	coordinatesHolder.add(xCorVisual);
+    	coordinatesHolder.add(yCorVisual);
+    	coordinatesPanel.add(topText);
+    	coordinatesPanel.add(coordinatesHolder);
+    	
+    	return coordinatesPanel;
+    }
+    
     private JPanel createMainGamePanel(Scenario scenario) 
     {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -412,7 +460,6 @@ public class WaterRescueGame extends JFrame
 
         return mainGamePanel;
     }
-
 
     private void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
     {
@@ -523,209 +570,265 @@ public class WaterRescueGame extends JFrame
         if (assetToUse instanceof Sonar) 
         {
         	Sonar sonar = (Sonar)assetToUse;
-            int radius = sonar.radius;
-            int[][] distanceMatrix = new int[chosenScenario.size][chosenScenario.size];
-            
-            for (int i = 0; i < chosenScenario.size; i++) 
-            {
-                Arrays.fill(distanceMatrix[i], Integer.MAX_VALUE);
-            }
-            
-			Rectangle bounds = buttons[0][0].getBounds();	
-			JLabel vehicleLabel = new JLabel();
-		    vehicleLabel.setIcon(sonar.icon); 
-        	int x_pos = selectedX * bounds.width + (bounds.width - vehicleLabel.getPreferredSize().width) / 2;
-		    int y_pos = selectedY * bounds.height + (bounds.height - vehicleLabel.getPreferredSize().height) / 2;
-        	vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
-	        iconPanel.add(vehicleLabel);
-	        iconPanel.revalidate(); 
-	        iconPanel.repaint();
-
-            Queue<Point> queue = new LinkedList<>();
-
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dy = -radius; dy <= radius; dy++) {
-                    int x = selectedX + dx;
-                    int y = selectedY + dy;
-
-                    if (x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
-                        Math.abs(dx) + Math.abs(dy) <= radius && survivors[x][y] > 0) 
-                    {                 
-                        queue.add(new Point(x, y));
-                        distanceMatrix[x][y] = 0;
-                    }
-                }
-            }
-            
-            if(queue.isEmpty())
-            {
-                for (int dx = -radius; dx <= radius; dx++) {
-                    for (int dy = -radius; dy <= radius; dy++) {
-                        int x = selectedX + dx;
-                        int y = selectedY + dy;
-
-                        if(x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
-                        Math.abs(x - selectedX) + Math.abs(y - selectedY) <= radius)
-                        {
-	                    	Random random = new Random();
-	
-	                        float noisedValue = radius + radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
-	                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-	                        changeFieldColor(x, y, new Color(colorValue, 255 - colorValue, 0));
-                        }
-                    }
-                }
-            }
-
-            int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
-            while (!queue.isEmpty()) 
-            {
-                Point current = queue.poll();
-                int currentDistance = distanceMatrix[current.x][current.y];
-
-                for (int[] dir : directions) 
-                {
-                    int nx = current.x + dir[0];
-                    int ny = current.y + dir[1];
-
-                    if (nx >= 0 && nx < chosenScenario.size && ny >= 0 && ny < chosenScenario.size &&
-                        Math.abs(nx - selectedX) + Math.abs(ny - selectedY) <= radius &&
-                        currentDistance + 1 < distanceMatrix[nx][ny]) 
-                    {
-                    	Random random = new Random();
-                        distanceMatrix[nx][ny] = currentDistance + 1;
-                        
-                        float noisedValue = distanceMatrix[nx][ny] + radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
-                        queue.add(new Point(nx, ny));
-
-                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-
-                        changeFieldColor(nx, ny, new Color(colorValue, 255 - colorValue, 0));
-                    }
-                }
-            }
-            
-            for (int x = 0; x < chosenScenario.size; x++) {
-                for (int y = 0; y < chosenScenario.size; y++) {
-                    if (distanceMatrix[x][y] == 0) 
-                    {
-                    	Random random = new Random();
-                        float noisedValue =  radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
-                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
-
-                        changeFieldColor(x, y, new Color(colorValue, 255 - colorValue, 0));
-                    }
-                }
-            }
+        	sonarAction(sonar);
         }
         else 
         {
             Vehicle vehicle = (Vehicle) assetToUse;
+            vehicleAction(vehicle);
+        }
+    }
+    
+    private void sonarAction(Sonar sonar)
+    {
+    	Random random = new Random();
+        int fixed_x = selectedX;
+        int fixed_y = selectedY;
+        int radius = sonar.radius;
+        int[][] distanceMatrix = new int[chosenScenario.size][chosenScenario.size];
+        
+        for (int i = 0; i < chosenScenario.size; i++) 
+        {
+            Arrays.fill(distanceMatrix[i], Integer.MAX_VALUE);
+        }
+        
+		JLabel vehicleLabel = new JLabel();
+	    vehicleLabel.setIcon(sonar.icon); 
+	    Point buttonPosition = buttons[fixed_x][selectedY].getLocation();
+	    int x_pos = buttonPosition.x + (buttons[fixed_x][fixed_y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
+	    int y_pos = buttonPosition.y + (buttons[fixed_x][fixed_y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
+	    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
+        iconPanel.add(vehicleLabel);
+        iconPanel.revalidate(); 
+        iconPanel.repaint();
+        
 
-            int[] currentPosition = { vehicle.affectedByCoordinates ? selectedX : 0, 
-                                      vehicle.affectedByCoordinates ? selectedY : 0 };
+        Thread sonarThread = new Thread(() -> 
+        {
+        	try 
+        	{
+        		Color[][] finalColors = new Color[chosenScenario.size][chosenScenario.size];
+        		
+        		//Initialisierung der Startfelder für Breitensuche
+	            Queue<Point> queue = new LinkedList<>();
+	            for (int dx = -radius; dx <= radius; dx++) 
+	            {
+	                for (int dy = -radius; dy <= radius; dy++) 
+	                {
+	                    int x = fixed_x + dx;
+	                    int y = fixed_y + dy;
+	
+	                    if (x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
+	                        Math.abs(dx) + Math.abs(dy) <= radius && survivors[x][y] > 0) 
+	                    {                 
+	                        queue.add(new Point(x, y));
+	                        distanceMatrix[x][y] = 0;
+	                        float noisedValue =  radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
+	                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
+	                        finalColors[x][y] = new Color(colorValue, 255 - colorValue, 0);
+	                    }
+	                }
+	            }
+	            
+	            //Wenn nichts gefunden
+	            if(queue.isEmpty())
+	            {
+	                for (int dx = -radius; dx <= radius; dx++) {
+	                    for (int dy = -radius; dy <= radius; dy++) {
+	                        int x = fixed_x + dx;
+	                        int y = fixed_y + dy;
+	
+	                        if(x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
+	                        Math.abs(x - fixed_x) + Math.abs(y - fixed_y) <= radius)
+	                        {
+	                        	float noisedValue = radius + radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
+		                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
+		                        finalColors[x][y] = new Color(colorValue, 255 - colorValue, 0);
+	                        }
+	                    }
+	                }
+	            }
+	
+	            int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+	
+	            //Breitensuche von jedem Startknoten aus 
+	            while (!queue.isEmpty()) 
+	            {
+	                Point current = queue.poll();
+	                int currentDistance = distanceMatrix[current.x][current.y];
+	
+	                for (int[] dir : directions) 
+	                {
+	                    int nx = current.x + dir[0];
+	                    int ny = current.y + dir[1];
+	
+	                    if (nx >= 0 && nx < chosenScenario.size && ny >= 0 && ny < chosenScenario.size &&
+	                        Math.abs(nx - fixed_x) + Math.abs(ny - fixed_y) <= radius &&
+	                        currentDistance + 1 < distanceMatrix[nx][ny]) 
+	                    {
+	                        distanceMatrix[nx][ny] = currentDistance + 1;
+	                        
+	                        queue.add(new Point(nx, ny));
+	
+	                        float noisedValue = distanceMatrix[nx][ny] + radius * (random.nextFloat() * 2 - 1) * sonar.maxNoise;
+	                        int colorValue = (int)Math.max(0, Math.min(noisedValue * 255 / radius, 255)); 
+	                        finalColors[nx][ny] = new Color(colorValue, 255 - colorValue, 0);
+	                    }
+	                }
+	            }
+	            
+	            //Färbung
+	            for(int cur_radius = 0; cur_radius < radius; cur_radius++)
+        		{
+		            for (int dx = -cur_radius; dx <= cur_radius; dx++) 
+		            {
+		                for (int dy = -cur_radius; dy <= cur_radius; dy++) 
+		                {
+		                	int x = fixed_x + dx;
+	                        int y = fixed_y + dy;
+	                        
+	                        if(x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
+	                        Math.abs(x - fixed_x) + Math.abs(y - fixed_y) <= radius)
+	                        {
+	                        	changeFieldColor(x, y, finalColors[x][y]);
+	                        }
+		                }
+		            }
+		            Thread.sleep(250);
+        		}
+        	}catch (InterruptedException e) 
+            {
+                e.printStackTrace();
+            } 
+    	});
+        sonarThread.start();
+    }
 
-            JLabel vehicleLabel = new JLabel();
-            vehicleLabel.setIcon(vehicle.icon);
+    private void vehicleAction(Vehicle vehicle)
+    {
 
-            iconPanel.add(vehicleLabel);
-            iconPanel.revalidate();
-            iconPanel.repaint();
+        int[] currentPosition = { vehicle.affectedByCoordinates ? selectedX : 0, 
+                                  vehicle.affectedByCoordinates ? selectedY : 0 };
 
-            Thread moveThread = new Thread(() -> {
-                try {
-                    activeThreads.add(Thread.currentThread());
+        JLabel vehicleLabel = new JLabel();
+        vehicleLabel.setIcon(vehicle.icon);
 
-                    for (CoordinateStep step : vehicle.movePattern) {
-                        int xToMove = step.x;
-                        int yToMove = step.y;
+        iconPanel.add(vehicleLabel);
+        iconPanel.revalidate();
+        iconPanel.repaint();
 
-                        if (!step.noUse) {
-                            int startX = Math.min(currentPosition[0], currentPosition[0] + xToMove);
-                            int endX = Math.max(currentPosition[0], currentPosition[0] + xToMove);
-                            int startY = Math.min(currentPosition[1], currentPosition[1] + yToMove);
-                            int endY = Math.max(currentPosition[1], currentPosition[1] + yToMove);
+        Thread moveThread = new Thread(() -> 
+        {
+            try {
+                activeThreads.add(Thread.currentThread());
 
-                            for (int x = startX; x < endX; x++) {
-                                if (x % 2 == 0) { // Left-to-right
-                                    for (int y = startY; y < endY; y++) {
-                                        performVehicleMove(vehicleLabel, vehicle, x, y);
-                                        Thread.sleep(100); 
-                                    }
-                                } else 
+                for (CoordinateStep step : vehicle.movePattern) 
+                {
+                    int xToMove = step.x;
+                    int yToMove = step.y;
+
+                    if (!step.noUse) {
+                        int startX = Math.min(currentPosition[0], currentPosition[0] + xToMove);
+                        int endX = Math.max(currentPosition[0], currentPosition[0] + xToMove);
+                        int startY = Math.min(currentPosition[1], currentPosition[1] + yToMove);
+                        int endY = Math.max(currentPosition[1], currentPosition[1] + yToMove);
+
+                        Boolean flip = true;
+                        
+                        for (int x = startX; x < endX; x++) 
+                        {
+                            if(flip) 
+                            {
+                            	flip = false;
+                                for (int y = startY; y < endY; y++) 
                                 {
-                                    for (int y = endY - 1; y >= startY; y--) {
-                                        performVehicleMove(vehicleLabel, vehicle, x, y);
-                                        Thread.sleep(100); 
+                                    performVehicleMove(vehicleLabel, vehicle, x, y);
+                                    Thread.sleep(100); 
+                                }
+                            } else 
+                            {
+                            	flip = true;
+                                for (int y = endY - 1; y >= startY; y--) 
+                                {
+                                    performVehicleMove(vehicleLabel, vehicle, x, y);
+                                    Thread.sleep(100); 
 
-                                    }
                                 }
                             }
                         }
+                    }
 
-                        currentPosition[0] += xToMove;
-                        currentPosition[1] += yToMove;
-                    }
-                } catch (InterruptedException e) 
-                {
-                    e.printStackTrace();
-                } finally 
-                {
-                    iconPanel.remove(vehicleLabel);
-                    iconPanel.revalidate();
-                    iconPanel.repaint();
-                    activeThreads.remove(Thread.currentThread());
-                    if (usesLeft <= 0 && activeThreads.isEmpty()) {
-                        endGame();
-                    }
+                    currentPosition[0] += xToMove;
+                    currentPosition[1] += yToMove;
                 }
-            });
-
-            moveThread.start();
-        }
-
-    }
-
-
-private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int y)
-{
-    if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size) 
-    {
-        vehicleLabel.setVisible(false);
-        return;
-    }
-
-    vehicleLabel.setVisible(true);
-
-    Point buttonPosition = buttons[x][y].getLocation();
-    int x_pos = buttonPosition.x + (buttons[x][y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
-    int y_pos = buttonPosition.y + (buttons[x][y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
-    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
-
-    if (survivors[x][y] > 0) {
-        if (vehicle.canRescue) {
-            buttons[x][y].setBackground(rescuedColor);
-            JOptionPane.showMessageDialog(frame, survivors[x][y] + " people saved.");
-            survivorsSaved += survivors[x][y];
-            survivors[x][y] = 0;
-
-            if (survivorsSaved == chosenScenario.survivors) {
-                endGame();
+            } catch (InterruptedException e) 
+            {
+                e.printStackTrace();
+            } 
+            finally 
+            {
+                iconPanel.remove(vehicleLabel);
+                iconPanel.revalidate();
+                iconPanel.repaint();
+                activeThreads.remove(Thread.currentThread());
+                if (usesLeft <= 0 && activeThreads.isEmpty()) 
+                {
+                    endGame();
+                }
             }
-        } else {
-            changeFieldColor(x, y, foundColor);
-        }
-    } else {
-        changeFieldColor(x, y, searchedColor);
+        });
+
+        moveThread.start();
     }
-    finalButtons[x][y] = true;
-    try {
-        Thread.sleep(500);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
+  
+    private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int y)
+    {
+	    if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size) 
+	    {
+	        vehicleLabel.setVisible(false);
+	        return;
+	    }
+	
+	    vehicleLabel.setVisible(true);
+	
+	    Point buttonPosition = buttons[x][y].getLocation();
+	    int x_pos = buttonPosition.x + (buttons[x][y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
+	    int y_pos = buttonPosition.y + (buttons[x][y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
+	    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
+	
+	    if (survivors[x][y] > 0)
+	    {
+	        if (vehicle.canRescue) 
+	        {
+	            buttons[x][y].setBackground(rescuedColor);
+	            JOptionPane.showMessageDialog(frame, survivors[x][y] + " people saved.");
+	            survivorsSaved += survivors[x][y];
+	            survivors[x][y] = 0;
+	
+	            if (survivorsSaved == chosenScenario.survivors) 
+	            {
+	                endGame();
+	            }
+	        } 
+	        else 
+	        {
+	            changeFieldColor(x, y, foundColor);
+	        }
+	    } 
+	    else 
+	    {
+	        changeFieldColor(x, y, searchedColor);
+	    }
+	    finalButtons[x][y] = true;
+	    try 
+	    {
+	        Thread.sleep(500);
+	    } 
+	    catch (InterruptedException e) 
+	    {
+	        e.printStackTrace();
+	    }
     }
-}
 
     private void placePeople(Scenario scenario) 
     {
@@ -759,6 +862,8 @@ private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int
     	
     	selectedX = x;
     	selectedY = y;
+    	xCorVisual.setText(Integer.toString(x));
+    	yCorVisual.setText(Integer.toString(y));
     	
 		changeFieldColor(x, y, selectedColor);
     }
