@@ -13,10 +13,13 @@ public class WaterRescueGame extends JFrame
     
     private JButton[][] buttons;
     private int[][] survivors;
-    private Boolean[][] changedButtons;
+    private Boolean[][] changedFields;
     private int survivorsSaved = 0;
     private int usesLeft;
-    private Boolean[][] finalButtons; //Buttons that shall not be changed by reset anymore
+    private Boolean[][] searchedFields; 
+    private Boolean[][] foundFields;
+    private Boolean[][] rescuedFields;
+    private Boolean[][] markedFields; 
     
     private int selectedX = -1;
     private int selectedY = -1;
@@ -32,6 +35,7 @@ public class WaterRescueGame extends JFrame
     Color searchedColor = new Color(50, 50, 150);
     Color foundColor = new Color(58, 18, 18);
     Color rescuedColor = new Color(18, 58, 22);
+    Color markedColor = new Color(255, 255, 22);
     
     private ImageIcon gameIcon;
     
@@ -305,13 +309,19 @@ public class WaterRescueGame extends JFrame
 
         buttons = new JButton[scenario.size][scenario.size];
         survivors = new int[scenario.size][scenario.size];
-        finalButtons = new Boolean[scenario.size][scenario.size];
-        changedButtons = new Boolean[scenario.size][scenario.size];
+        foundFields = new Boolean[scenario.size][scenario.size];
+        changedFields = new Boolean[scenario.size][scenario.size];
+        rescuedFields = new Boolean[scenario.size][scenario.size];
+        markedFields = new Boolean[scenario.size][scenario.size];
+        searchedFields = new Boolean[scenario.size][scenario.size];
         
         for (int i = 0; i < scenario.size; i++) {
             for (int j = 0; j < scenario.size; j++) {
-                finalButtons[i][j] = false;
-                changedButtons[i][j] = false;
+            	changedFields[i][j] = false;
+                searchedFields[i][j] = false; 
+                foundFields[i][j] = false; 
+                rescuedFields[i][j] = false; 
+                markedFields[i][j] = false; 
             }
         }
         
@@ -800,7 +810,7 @@ public class WaterRescueGame extends JFrame
 	    {
 	        if (vehicle.canRescue) 
 	        {
-	            buttons[x][y].setBackground(rescuedColor);
+	        	rescuedFields[x][y] = true;
 	            JOptionPane.showMessageDialog(frame, survivors[x][y] + " people saved.");
 	            survivorsSaved += survivors[x][y];
 	            survivors[x][y] = 0;
@@ -812,14 +822,16 @@ public class WaterRescueGame extends JFrame
 	        } 
 	        else 
 	        {
-	            changeFieldColor(x, y, foundColor);
+	        	foundFields[x][y] = true;
 	        }
 	    } 
 	    else 
 	    {
-	        changeFieldColor(x, y, searchedColor);
+	    	searchedFields[x][y] = true;
 	    }
-	    finalButtons[x][y] = true;
+	    
+        updateFieldColor(x, y);
+        
 	    try 
 	    {
 	        Thread.sleep(500);
@@ -859,13 +871,19 @@ public class WaterRescueGame extends JFrame
     private void selectButton(int x, int y)
     {
     	resetGridColors();
-    	
-    	selectedX = x;
-    	selectedY = y;
-    	xCorVisual.setText(Integer.toString(x));
-    	yCorVisual.setText(Integer.toString(y));
-    	
-		changeFieldColor(x, y, selectedColor);
+    	if(selectedX == x && selectedY == y)
+    	{
+        		markedFields[x][y] = !markedFields[x][y];
+        		updateFieldColor(x,y);
+    	}
+    	else
+    	{
+        	selectedX = x;
+        	selectedY = y;
+        	xCorVisual.setText(Integer.toString(x));
+        	yCorVisual.setText(Integer.toString(y));
+    		changeFieldColor(x, y, selectedColor);
+    	}
     }
     
     private void previewAssetRange(Asset asset)
@@ -929,27 +947,46 @@ public class WaterRescueGame extends JFrame
     	}
     }
     
-    private void resetGridColors() //Resets all grid cells that changed and are not in final state
+    private void resetGridColors() 
     {
-    	for(int i = 0; i < changedButtons.length; i++)
+    	for(int x = 0; x < changedFields.length; x++)
     	{
-        	for(int j = 0; j < changedButtons.length; j++)
+        	for(int y = 0; y < changedFields.length; y++)
         	{
-        		if(changedButtons[i][j])
-        		{
-	        		if(!finalButtons[i][j])
-	        			buttons[i][j].setBackground(seaColor);
-	        		else
-	        			buttons[i][j].setBackground(searchedColor);
-        		}
+        		updateFieldColor(x, y);
+        		changedFields[x][y] = false;
         	}
     	}
     }
     
+    
+    private void updateFieldColor(int x, int y)
+    {
+		if(markedFields[x][y])
+		{
+			changeFieldColor(x, y, markedColor);
+		}
+		else if(rescuedFields[x][y])
+		{
+			changeFieldColor(x, y, rescuedColor);
+		}
+		else if(foundFields[x][y])
+		{
+			changeFieldColor(x, y, foundColor);
+		}
+		else if(searchedFields[x][y])
+		{
+			changeFieldColor(x, y, searchedColor);
+		}
+		else
+		{
+			changeFieldColor(x, y, seaColor);
+		}
+    }
     private void changeFieldColor(int x, int y, Color color) //Paints field to given color and marks it as changed
     {
-        buttons[x][y].setBackground(color);
-		changedButtons[x][y] = true;
+	        buttons[x][y].setBackground(color);
+	        changedFields[x][y] = true;
     }
     
     private void endGame() //Enables end screen
@@ -993,6 +1030,7 @@ public class WaterRescueGame extends JFrame
         dialog.setLocationRelativeTo(frame); 
         dialog.setVisible(true); 
     }
+    
     
     public static void main(String[] args)
     {
