@@ -122,14 +122,25 @@ public class WaterRescueGame extends JFrame
         titleMenuSplitPanel.setLayout(new BoxLayout(titleMenuSplitPanel, BoxLayout.Y_AXIS));
         titleMenuSplitPanel.setBackground(Color.BLACK);
         
+        JPanel logoContainer = new JPanel();
+        logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
+        logoContainer.setOpaque(false);
+        
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/main/icons/MainGameLogo.png"));
+        Image scaledImage = logoIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(scaledImage);
+       
+        JLabel gameLogo = new JLabel(logoIcon);
+        logoContainer.add(gameLogo);
+
         panel.add(instructionText);
         panel.add(Box.createVerticalStrut(10)); 
         panel.add(enterField);
         panel.add(Box.createVerticalStrut(10)); 
         panel.add(button);
         
-        titleMenuSplitPanel.add(titlePanel);
-        titleMenuSplitPanel.add(Box.createVerticalStrut(50)); 
+        titleMenuSplitPanel.add(titlePanel); 
+        titleMenuSplitPanel.add(logoContainer);
         titleMenuSplitPanel.add(panel);
         centerPanel.add(titleMenuSplitPanel);
         
@@ -225,9 +236,15 @@ public class WaterRescueGame extends JFrame
 	            for (Asset asset : scenario.assets) {
 	                assetsInfo.append("\n").append(asset.name)
 	                          .append("\n(");
-	                if (asset instanceof Vehicle) {
+	                if (asset instanceof Vehicle) 
+	                {
 	                    Vehicle vehicle = (Vehicle) asset;
-	                    assetsInfo.append("Range: ");
+	                    String pattern = "complex";
+	                    if(vehicle.movePattern.length == 1)
+	                    {
+	                    	pattern = "pattern: (" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
+	                    }
+	                    assetsInfo.append(pattern);
 	                } else if (asset instanceof Sonar) {
 	                    Sonar sonar = (Sonar) asset;
 	                    assetsInfo.append("Radius: ").append(sonar.radius);
@@ -555,7 +572,13 @@ public class WaterRescueGame extends JFrame
             if (vehicle.canRescue) {
                 textAdd = " X";
             }
-            asset.myTextArea.setText(vehicle.name + textAdd + "\n\nPattern:\nAmount: " + vehicle.amount);
+            String pattern = "complex";
+            if(vehicle.movePattern.length == 1)
+            {
+            	pattern = "(" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
+            }
+            
+            asset.myTextArea.setText(vehicle.name + textAdd + "\n\nPattern: " + pattern + "\nAmount: " + vehicle.amount);
         } 
         else if (asset instanceof Sonar) {
             Sonar sonar = (Sonar) asset;
