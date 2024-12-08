@@ -7,40 +7,32 @@ import javax.swing.border.Border;
 
 public class WaterRescueGame extends JFrame 
 {
-	private Dimension standardButtonSize = new Dimension(175, 25);
-    private JFrame frame;
+	public static Dimension standardButtonSize = new Dimension(175, 25);
+    public JFrame frame;
     private Scenario chosenScenario;
     
-    private JButton[][] buttons;
-    private int[][] survivors;
-    private Boolean[][] changedFields;
-    private int survivorsSaved = 0;
-    private int usesLeft;
-    private Boolean[][] searchedFields; 
-    private Boolean[][] foundFields;
-    private Boolean[][] rescuedFields;
-    private Boolean[][] markedFields; 
+    protected JButton[][] buttons;
+    protected int[][] survivors;
+    protected Boolean[][] changedFields;
+    protected int survivorsSaved = 0;
+    protected int usesLeft;
+    protected Boolean[][] searchedFields; 
+    protected Boolean[][] foundFields;
+    protected Boolean[][] rescuedFields;
+    protected Boolean[][] markedFields; 
     
     private int selectedX = -1;
     private int selectedY = -1;
     
-    JPanel assetPanel;
-    JPanel iconPanel;
-    JLabel xCorVisual;
-    JLabel yCorVisual;
     Set<Thread> activeThreads = new HashSet<>();
-    
-    Color seaColor = new Color(0, 0, 51);
-    Color selectedColor = new Color(0, 0, 200);
-    Color searchedColor = new Color(50, 50, 150);
-    Color foundColor = new Color(58, 18, 18);
-    Color rescuedColor = new Color(18, 58, 22);
-    Color markedColor = new Color(255, 255, 22);
-    
+
     private ImageIcon gameIcon;
+    
+    public static WaterRescueGame instance;
     
     public WaterRescueGame() //Prepares frame and opens main menu
     {
+    	instance = this;
     	frame = this;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Water Rescue Operator");
@@ -48,7 +40,6 @@ public class WaterRescueGame extends JFrame
         frame.setUndecorated(true);
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new BorderLayout());;
-        
     	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
         frame.setIconImage(gameIcon.getImage());
     
@@ -56,7 +47,6 @@ public class WaterRescueGame extends JFrame
         setVisible(true);
     }
     
-    //Windows
     public void CreateMainMenu() //Switches to main menu
     {
         frame.getContentPane().removeAll(); 
@@ -69,7 +59,7 @@ public class WaterRescueGame extends JFrame
         titlePanel.setBackground(Color.black);
 
         JLabel title = new JLabel("WATER RESCUE OPERATOR");
-        title.setForeground(selectedColor);
+        title.setForeground(GameColors.selectedColor);
         title.setBackground(Color.black);
         title.setHorizontalAlignment(JLabel.CENTER);
         Font currentFont = title.getFont();
@@ -345,248 +335,13 @@ public class WaterRescueGame extends JFrame
         usesLeft = 0;
         survivorsSaved = 0;
         
-        int eastPanelWidth = (int)(frame.getWidth() * 0.2f);
-        JPanel eastPanel = createEastPanel(eastPanelWidth);
-        JPanel mainGamePanel = createMainGamePanel(scenario);
-        assetPanel = createAssetPanel();
-        JPanel coordinatesPanel = createCoordinatesPanel();
-        eastPanel.add(assetPanel, BorderLayout.CENTER);
-        eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
-        
-        placePeople(scenario);
-        drawAssets(assetPanel, scenario.assets);
-
-        frame.add(mainGamePanel, BorderLayout.CENTER);
-        frame.add(eastPanel, BorderLayout.EAST);
+        UiManager.instance.createGameCanvas(scenario);
 
         frame.revalidate(); 
         frame.repaint();  
     }
 
-    //Main Game UI management
-    private JPanel createEastPanel(int width) 
-    {
-        JPanel assetPanel = new JPanel();
-        assetPanel.setLayout(new BorderLayout());
-        assetPanel.setBackground(Color.darkGray);
-        assetPanel.setPreferredSize(new Dimension(width, frame.getHeight()));
-        assetPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
-        return assetPanel;
-    }
-    
-    private JPanel createAssetPanel() 
-    {
-        JPanel assetPanel = new JPanel();
-        assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
-        assetPanel.setBackground(Color.darkGray);
-        return assetPanel;
-    }
-    
-    private JPanel createCoordinatesPanel()
-    {
-    	JPanel coordinatesPanel = new JPanel();
-    	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
-    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getPreferredSize().width, 100));
-    	JLabel topText = new JLabel("SELECTED COORDINATES");
-    	JPanel coordinatesHolder = new JPanel();
-    	coordinatesHolder.setLayout(new FlowLayout(FlowLayout.CENTER));
-    	Font font = new Font("Arial", Font.BOLD, 14);
-    	
-        xCorVisual = new JLabel("X", SwingConstants.CENTER);
-        xCorVisual.setFont(font);
-        xCorVisual.setPreferredSize(new Dimension(50, 50)); 
-        xCorVisual.setOpaque(true); 
-        xCorVisual.setBackground(Color.WHITE);
-        xCorVisual.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-
-        yCorVisual = new JLabel("Y", SwingConstants.CENTER); 
-        yCorVisual.setFont(font);
-        yCorVisual.setPreferredSize(new Dimension(50, 50)); 
-        yCorVisual.setOpaque(true); 
-        yCorVisual.setBackground(Color.WHITE);
-        yCorVisual.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-    	
-    	topText.setHorizontalAlignment(SwingConstants.CENTER);
-    	xCorVisual.setHorizontalAlignment(SwingConstants.CENTER);
-    	yCorVisual.setHorizontalAlignment(SwingConstants.CENTER);
-    	
-    	Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
-    	xCorVisual.setBorder(border);
-    	yCorVisual.setBorder(border);
-    	
-    	coordinatesPanel.setBackground(Color.GRAY);
-    	coordinatesHolder.setBackground(Color.GRAY);
-    	topText.setBackground(Color.GRAY);
-    	
-    	coordinatesHolder.add(xCorVisual);
-    	coordinatesHolder.add(yCorVisual);
-    	coordinatesPanel.add(topText);
-    	coordinatesPanel.add(coordinatesHolder);
-    	
-    	return coordinatesPanel;
-    }
-    
-    private JPanel createMainGamePanel(Scenario scenario) 
-    {
-        JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        mainGamePanel.setBackground(Color.DARK_GRAY);
-
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(Color.DARK_GRAY);
-        
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension((int) (frame.getHeight() * 0.9f), (int) (frame.getHeight() * 0.9f)));
-
-        JPanel grid = new JPanel();
-        grid.setBackground(Color.BLACK);
-        grid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        grid.setLayout(new GridLayout(scenario.size, scenario.size));
-        grid.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height); 
-
-        JPanel leftPanel = new JPanel(new GridLayout(scenario.size, 1));
-        leftPanel.setBackground(Color.DARK_GRAY);
-        
-        JPanel bottomPanel = new JPanel(new GridLayout(1, scenario.size)); 
-        bottomPanel.setBackground(Color.DARK_GRAY);
-        
-        for (int row = 0; row < scenario.size; row++) 
-        {
-            for (int column = 0; column < scenario.size; column++) 
-            {
-                final int r = row;
-                final int c = column;
-
-                JButton gameField = new JButton();
-                gameField.setBackground(seaColor);
-                gameField.setToolTipText("AREA: (" + r + ", " + c+ ")");
-                
-                grid.add(gameField);
-                buttons[column][row] = gameField;
-
-                gameField.addActionListener(new ActionListener() 
-                {
-                    @Override
-                    public void actionPerformed(ActionEvent e) 
-                    {
-                        selectButton(c, r);
-                    }
-                });
-            }
-        }
-        iconPanel = new JPanel(null); 
-        iconPanel.setOpaque(false); 
-        iconPanel.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height);
-
-        layeredPane.add(grid, Integer.valueOf(0));
-        layeredPane.add(iconPanel, Integer.valueOf(1)); 
-
-        centerPanel.add(layeredPane, BorderLayout.CENTER);
-        centerPanel.add(leftPanel, BorderLayout.WEST); 
-        centerPanel.add(bottomPanel, BorderLayout.SOUTH);
-        mainGamePanel.add(centerPanel);
-
-        return mainGamePanel;
-    }
-
-    private void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
-    {
-        for (Asset asset : assets) 
-        {
-        	usesLeft += asset.amount;
-        	
-            JPanel assetWindow = new JPanel();
-            assetWindow.setBackground(Color.gray);
-            assetWindow.setLayout(new BorderLayout());
- 
-            JTextArea statsTextArea = new JTextArea();
-            asset.myTextArea = statsTextArea;
-            SetText(asset);
-            statsTextArea.setLineWrap(true);
-            statsTextArea.setWrapStyleWord(true);
-            statsTextArea.setOpaque(false);
-            statsTextArea.setEditable(false);
-            statsTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            assetWindow.add(statsTextArea, BorderLayout.WEST);
-            
-            JTextArea descriptionTextArea = new JTextArea(asset.description);
-            descriptionTextArea.setLineWrap(true);
-            descriptionTextArea.setWrapStyleWord(true);
-            descriptionTextArea.setOpaque(false);
-            descriptionTextArea.setEditable(false);
-            descriptionTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            assetWindow.add(descriptionTextArea, BorderLayout.EAST);
-	
-            JPanel buttonsPanel = new JPanel();
-            buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-            buttonsPanel.setBackground(Color.gray);
-            
-            JButton selectButton = new JButton("PREVIEW");
-            selectButton.setMaximumSize(standardButtonSize);
-            selectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            selectButton.addActionListener(new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent e) 
-                {
-                    previewAssetRange(asset);
-                }
-            });
-            
-            JButton deployButton = new JButton("DEPLOY");
-            deployButton.setMaximumSize(standardButtonSize);
-            deployButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            
-            deployButton.addActionListener(new ActionListener()
-            {
-            	@Override
-            	public void actionPerformed(ActionEvent e)
-            	{
-            		UseAsset(asset);
-            	}
-            });
-            
-            buttonsPanel.add(selectButton);
-            buttonsPanel.add(deployButton);
-            
-            assetWindow.add(buttonsPanel, BorderLayout.SOUTH);
-
-            int extraWidth = 100; 
-            int width = assetWindow.getPreferredSize().width + extraWidth;
-            int height = assetWindow.getPreferredSize().height + 15;
-
-            assetWindow.setMaximumSize(new Dimension(width, height));
-            assetWindow.setPreferredSize(new Dimension(width, height));
-            assetWindow.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-            
-            panelToDrawOn.add(assetWindow);
-            panelToDrawOn.add(Box.createVerticalStrut(10));
-        }
-    }
-
-    private void SetText(Asset asset)
-    {
-        String textAdd = "";
-        if (asset instanceof Vehicle) {
-            Vehicle vehicle = (Vehicle) asset;
-            if (vehicle.canRescue) {
-                textAdd = " X";
-            }
-            String pattern = "complex";
-            if(vehicle.movePattern.length == 1)
-            {
-            	pattern = "(" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
-            }
-            
-            asset.myTextArea.setText(vehicle.name + textAdd + "\n\nPattern: " + pattern + "\nAmount: " + vehicle.amount);
-        } 
-        else if (asset instanceof Sonar) {
-            Sonar sonar = (Sonar) asset;
-            asset.myTextArea.setText(sonar.name + "\n\nRadius: " + sonar.radius + "\nAmount: " + sonar.amount);
-        }
-    }
-    
-    private void UseAsset(Asset assetToUse) 
+    protected void UseAsset(Asset assetToUse) 
     {
 	    if (assetToUse.amount <= 0) {
 	        JOptionPane.showMessageDialog(null, "No more uses left for " + assetToUse.name);
@@ -595,10 +350,7 @@ public class WaterRescueGame extends JFrame
 	
 	    usesLeft--;
 	    assetToUse.amount--;
-	    SetText(assetToUse);
-	
-	    assetPanel.revalidate();
-	    assetPanel.repaint();
+	    UiManager.instance.SetText(assetToUse);
 	
         if (assetToUse instanceof Sonar) 
         {
@@ -625,17 +377,15 @@ public class WaterRescueGame extends JFrame
             Arrays.fill(distanceMatrix[i], Integer.MAX_VALUE);
         }
         
-		JLabel vehicleLabel = new JLabel();
-	    vehicleLabel.setIcon(sonar.icon); 
+		JLabel solarIcon = new JLabel();
+	    solarIcon.setIcon(sonar.icon); 
 	    Point buttonPosition = buttons[fixed_x][selectedY].getLocation();
-	    int x_pos = buttonPosition.x + (buttons[fixed_x][fixed_y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
-	    int y_pos = buttonPosition.y + (buttons[fixed_x][fixed_y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
-	    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
-        iconPanel.add(vehicleLabel);
-        iconPanel.revalidate(); 
-        iconPanel.repaint();
+	    int x_pos = buttonPosition.x + (buttons[fixed_x][fixed_y].getWidth() - solarIcon.getPreferredSize().width) / 2;
+	    int y_pos = buttonPosition.y + (buttons[fixed_x][fixed_y].getHeight() - solarIcon.getPreferredSize().height) / 2;
+	    solarIcon.setBounds(x_pos, y_pos, solarIcon.getPreferredSize().width, solarIcon.getPreferredSize().height);
+	    
+        UiManager.instance.createIcon(solarIcon);
         
-
         Thread sonarThread = new Thread(() -> 
         {
         	try 
@@ -746,9 +496,7 @@ public class WaterRescueGame extends JFrame
         JLabel vehicleLabel = new JLabel();
         vehicleLabel.setIcon(vehicle.icon);
 
-        iconPanel.add(vehicleLabel);
-        iconPanel.revalidate();
-        iconPanel.repaint();
+        UiManager.instance.createIcon(vehicleLabel);
 
         Thread moveThread = new Thread(() -> 
         {
@@ -800,9 +548,7 @@ public class WaterRescueGame extends JFrame
             } 
             finally 
             {
-                iconPanel.remove(vehicleLabel);
-                iconPanel.revalidate();
-                iconPanel.repaint();
+            	UiManager.instance.removeIcon(vehicleLabel);
                 activeThreads.remove(Thread.currentThread());
                 if (usesLeft <= 0 && activeThreads.isEmpty()) 
                 {
@@ -865,7 +611,7 @@ public class WaterRescueGame extends JFrame
 	    }
     }
 
-    private void placePeople(Scenario scenario) 
+    protected void placePeople(Scenario scenario) 
     {
         Random rand = new Random();
         int[] clusters = new int[scenario.clusters];
@@ -891,7 +637,7 @@ public class WaterRescueGame extends JFrame
         }
     }
   
-    private void selectButton(int x, int y)
+    public void selectButton(int x, int y)
     {
     	resetGridColors();
     	if(selectedX == x && selectedY == y)
@@ -903,13 +649,12 @@ public class WaterRescueGame extends JFrame
     	{
         	selectedX = x;
         	selectedY = y;
-        	xCorVisual.setText(Integer.toString(x));
-        	yCorVisual.setText(Integer.toString(y));
-    		changeFieldColor(x, y, selectedColor);
+        	UiManager.instance.setVisualCoordinates(x, y);
+    		changeFieldColor(x, y, GameColors.selectedColor);
     	}
     }
     
-    private void previewAssetRange(Asset asset)
+    protected void previewAssetRange(Asset asset)
     {
     	if(selectedX == -1 || selectedY == -1)
     		return;
@@ -943,7 +688,7 @@ public class WaterRescueGame extends JFrame
 			                    continue;	
 			    			if(x < chosenScenario.size && y < chosenScenario.size)
 			    			{
-			        			changeFieldColor(x, y, selectedColor);
+			        			changeFieldColor(x, y, GameColors.selectedColor);
 			    			}
 						}
 					}
@@ -963,7 +708,7 @@ public class WaterRescueGame extends JFrame
                     if (x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
                         Math.abs(dx) + Math.abs(dy) <= sonar.radius) 
                     {                 
-                    	changeFieldColor(x, y, selectedColor);
+                    	changeFieldColor(x, y, GameColors.selectedColor);
                     }
                 }
             }
@@ -980,32 +725,36 @@ public class WaterRescueGame extends JFrame
         		changedFields[x][y] = false;
         	}
     	}
-    }
-    
+    }   
     
     private void updateFieldColor(int x, int y)
     {
-		if(markedFields[x][y])
+    	if(foundFields[x][y] && !rescuedFields[x][y])
 		{
-			changeFieldColor(x, y, markedColor);
+			changeFieldColor(x, y, GameColors.foundColor);
+		}
+    	else if(markedFields[x][y])
+		{
+			changeFieldColor(x, y, GameColors.markedColor);
 		}
 		else if(rescuedFields[x][y])
 		{
-			changeFieldColor(x, y, rescuedColor);
+			changeFieldColor(x, y, GameColors.rescuedColor);
 		}
 		else if(foundFields[x][y])
 		{
-			changeFieldColor(x, y, foundColor);
+			changeFieldColor(x, y, GameColors.foundColor);
 		}
 		else if(searchedFields[x][y])
 		{
-			changeFieldColor(x, y, searchedColor);
+			changeFieldColor(x, y, GameColors.searchedColor);
 		}
 		else
 		{
-			changeFieldColor(x, y, seaColor);
+			changeFieldColor(x, y, GameColors.seaColor);
 		}
     }
+    
     private void changeFieldColor(int x, int y, Color color) //Paints field to given color and marks it as changed
     {
 	        buttons[x][y].setBackground(color);
@@ -1053,8 +802,7 @@ public class WaterRescueGame extends JFrame
         dialog.setLocationRelativeTo(frame); 
         dialog.setVisible(true); 
     }
-    
-    
+       
     public static void main(String[] args)
     {
         Font mainFont = new Font("Arial", Font.BOLD, 12);
@@ -1065,6 +813,7 @@ public class WaterRescueGame extends JFrame
         UIManager.put("TextPane.font", mainFont);
         UIManager.put("MenuItem.font", mainFont);
         new SaveSystem("Water Rescue Operator");
+        new UiManager();
     	new WaterRescueGame();
     }
 }
