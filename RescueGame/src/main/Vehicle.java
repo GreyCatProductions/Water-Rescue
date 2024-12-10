@@ -5,12 +5,19 @@ public class Vehicle extends Asset
 {
     public CoordinateStep[] movePattern;
     public Boolean canRescue;
-    public Boolean affectedByCoordinates; 
+    public Boolean affectedByX; 
+    public Boolean affectedByY; 
 
-    public Vehicle(String name, int amount, Boolean affectedByCoordinates, CoordinateStep[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
+    public Vehicle(String name, int amount, CoordinateStep[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
+    {
+        this(name, amount, movePattern, canRescue, description, icon, true, true);
+    }
+
+    public Vehicle(String name, int amount, CoordinateStep[] movePattern, Boolean canRescue, String description, ImageIcon icon, Boolean affectedByX, Boolean affectedByY) 
     {
         super(name, amount, description, icon);
-        this.affectedByCoordinates = affectedByCoordinates;
+        this.affectedByX = affectedByX;
+        this.affectedByY = affectedByY;
         this.movePattern = movePattern;
         this.canRescue = canRescue;
     }

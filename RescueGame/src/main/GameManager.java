@@ -225,8 +225,8 @@ public class GameManager extends JFrame
     private void vehicleAction(Vehicle vehicle)
     {
 
-        int[] currentPosition = { vehicle.affectedByCoordinates ? selectedX : 0, 
-                                  vehicle.affectedByCoordinates ? selectedY : 0 };
+        int[] currentPosition = { vehicle.affectedByX ? selectedX : 0, 
+                                  vehicle.affectedByY ? selectedY : 0 };
 
         JLabel vehicleLabel = new JLabel();
         vehicleLabel.setIcon(vehicle.icon);
@@ -400,8 +400,8 @@ public class GameManager extends JFrame
     	{
     		Vehicle vehicle = (Vehicle) asset;
     		
-			int curX = vehicle.affectedByCoordinates ? selectedX : 0;
-			int curY = vehicle.affectedByCoordinates ? selectedY : 0;
+			int curX = vehicle.affectedByX ? selectedX : 0;
+			int curY = vehicle.affectedByY ? selectedY : 0;
 
 			for(CoordinateStep step : vehicle.movePattern)
 			{
