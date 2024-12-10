@@ -6,7 +6,8 @@ import java.util.*;
 
 public class GameManager extends JFrame 
 {
-    public static JFrame frame;
+	private static final long serialVersionUID = 1L;
+	public static JFrame frame;
     protected static Scenario chosenScenario;
     
     protected JButton[][] buttons;
@@ -287,7 +288,7 @@ public class GameManager extends JFrame
                 activeThreads.remove(Thread.currentThread());
                 if (usesLeft <= 0 && activeThreads.isEmpty()) 
                 {
-                    endGame();
+                    UiManager.instance.endGame(survivorsSaved);
                 }
             }
         });
@@ -321,7 +322,7 @@ public class GameManager extends JFrame
 	
 	            if (survivorsSaved == chosenScenario.survivors) 
 	            {
-	                endGame();
+	                UiManager.instance.endGame(survivorsSaved);
 	            }
 	        } 
 	        else 
@@ -494,48 +495,6 @@ public class GameManager extends JFrame
     {
 	        buttons[x][y].setBackground(color);
 	        changedFields[x][y] = true;
-    }
-    
-    private void endGame() //Enables end screen
-    {
-    	String title;
-    	float ratio = (float) survivorsSaved / chosenScenario.survivors;
-
-    	if (ratio == 1.0f) 
-    	    title = "PERFECT JOB";
-    	else if (ratio > 0.75f)
-    		title = "GOOD JOB";
-    	else if (ratio > 0.5f)
-    		title = "MEDIOCRE JOB";
-    	else if (ratio > 0.25f)
-    		title = "BAD JOB";
-    	else 
-    	    title = "TERRIBLE JOB";
-
-    	
-        JDialog dialog = new JDialog(frame, title, true);
-        dialog.setLayout(new BorderLayout());
-
-        String message = survivorsSaved + " / " + chosenScenario.survivors + " people saved!\n\n";
-        JLabel messageLabel = new JLabel("<html>" + message + "</html>", SwingConstants.CENTER);
-        dialog.add(messageLabel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UiManager.instance.CreateLevelSelection();
-                dialog.dispose();
-            }
-        });
-        buttonPanel.add(okButton);
-        
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setSize(new Dimension(300, 200));
-        dialog.setLocationRelativeTo(frame); 
-        dialog.setVisible(true); 
     }
        
     public static void main(String[] args)

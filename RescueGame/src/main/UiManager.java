@@ -20,6 +20,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -38,6 +39,8 @@ public class UiManager
 	private JLabel yCorVisual;
     
     public static UiManager instance;
+    
+    private String chosenUserName;
     
     public UiManager()
     {
@@ -91,10 +94,10 @@ public class UiManager
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String userInput = enterField.getText(); 
-                if (userInput.length() >= 3 && userInput.length() <= 20 && userInput.matches("[a-zA-Z]+")) 
+            	chosenUserName = enterField.getText(); 
+                if (chosenUserName.length() >= 3 && chosenUserName.length() <= 20 && chosenUserName.matches("[a-zA-Z]+")) 
                 {
-                    JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + userInput);
+                    JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + chosenUserName);
 	                CreateLevelSelection();
                 }
                 else
@@ -214,9 +217,12 @@ public class UiManager
 	    startGameButton.setPreferredSize(standardButtonSize);
 	    startGameButton.addActionListener(e -> GameManager.instance.CreateMainGame(GameManager.chosenScenario));
 	
-	    LinkedList<Scenario> scenarios = ScenarioManager.getScenarios();
-	
-	    for (Scenario scenario : scenarios) {
+	    int[] highscores = SaveLoadManager.getStats(chosenUserName);
+	    
+	    for(int i = 0; i < ScenarioManager.scenarios.size(); i++) 
+	    {
+	    	Scenario scenario = ScenarioManager.scenarios.get(i);
+	    	final int current_counter = i;
 	        JButton scenarioButton = new JButton(scenario.name);
 	        scenarioButton.addActionListener(e -> {
 	            StringBuilder assetsInfo = new StringBuilder();
@@ -239,7 +245,7 @@ public class UiManager
 	                assetsInfo.append(", Amount: ").append(asset.amount).append(")\n");
 	            }
 	
-	            scenarioTextArea.setText("\n" + scenario.name + "\n\nSize: " + scenario.size + " x " + scenario.size + " NM\n\nSurvivors: " + scenario.survivors + "\n\n" + scenario.description);
+	            scenarioTextArea.setText("\n" + scenario.name + "\n\nSize: " + scenario.size + " x " + scenario.size + " NM\n\nSurvivors: " + scenario.survivors + "\n\n" + scenario.description + "\n\nPersonal highscore: " + highscores[current_counter] + "/" + scenario.survivors);
 	            assetTextArea.setText("\nASSETS:\n" + assetsInfo.toString());
 	            GameManager.chosenScenario = scenario;
 	            startGameButton.setEnabled(true);
@@ -409,6 +415,53 @@ public class UiManager
         return mainGamePanel;
     }
 
+    
+    protected void endGame(int survivorsSaved) //Enables end screen
+    {
+    	int[] stats = SaveLoadManager.getStats(chosenUserName);
+    	stats[ScenarioManager.scenarios.indexOf(GameManager.chosenScenario)] = survivorsSaved;
+    	SaveLoadManager.saveStats(chosenUserName, stats);
+    	
+    	String title;
+    	float ratio = (float) survivorsSaved / GameManager.chosenScenario.survivors;
+
+    	if (ratio == 1.0f) 
+    	    title = "PERFECT JOB";
+    	else if (ratio > 0.75f)
+    		title = "GOOD JOB";
+    	else if (ratio > 0.5f)
+    		title = "MEDIOCRE JOB";
+    	else if (ratio > 0.25f)
+    		title = "BAD JOB";
+    	else 
+    	    title = "TERRIBLE JOB";
+
+    	
+        JDialog dialog = new JDialog(GameManager.frame, title, true);
+        dialog.setLayout(new BorderLayout());
+
+        String message = survivorsSaved + " / " + GameManager.chosenScenario.survivors + " people saved!\n\n";
+        JLabel messageLabel = new JLabel("<html>" + message + "</html>", SwingConstants.CENTER);
+        dialog.add(messageLabel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UiManager.instance.CreateLevelSelection();
+                dialog.dispose();
+            }
+        });
+        buttonPanel.add(okButton);
+        
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setSize(new Dimension(300, 200));
+        dialog.setLocationRelativeTo(GameManager.frame); 
+        dialog.setVisible(true); 
+    }
+    
     protected void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
     {
         for (Asset asset : assets) 
