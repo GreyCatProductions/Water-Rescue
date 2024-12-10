@@ -6,27 +6,36 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 public class UiManager
 {
-    JPanel assetPanel;
-    JPanel iconPanel;
-    JLabel xCorVisual;
-    JLabel yCorVisual;
+	private Dimension standardButtonSize = new Dimension(175, 25);
+	private JPanel assetPanel;
+	private JPanel iconPanel;
+	private JLabel xCorVisual;
+	private JLabel yCorVisual;
     
     public static UiManager instance;
     
@@ -35,21 +44,242 @@ public class UiManager
     	instance = this;
     }
     
-    public void createIcon(JLabel icon)
+    protected void CreateMainMenu() //Switches to main menu
+    {
+        GameManager.frame.getContentPane().removeAll(); 
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new GridBagLayout());
+        centerPanel.setBackground(Color.black); 
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(Color.black);
+
+        JLabel title = new JLabel("WATER RESCUE OPERATOR");
+        title.setForeground(GameColors.selectedColor);
+        title.setBackground(Color.black);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        Font currentFont = title.getFont();
+        Font newFont = currentFont.deriveFont(64f);
+        title.setFont(newFont);
+        title.setBorder(null);
+
+        titlePanel.add(title);
+        
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.darkGray);
+        
+        JLabel instructionText = new JLabel("ENTER YOUR NAME");
+        instructionText.setHorizontalAlignment(JLabel.CENTER); 
+        instructionText.setBorder(null);
+        instructionText.setForeground(Color.WHITE);
+        instructionText.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton button = new JButton("Start Game");
+        button.setPreferredSize(standardButtonSize);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JTextField enterField = new JTextField(15);
+        enterField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        enterField.setHorizontalAlignment(JTextField.CENTER); 
+        enterField.setMaximumSize(new Dimension(200, 20)); 
+        
+        button.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                String userInput = enterField.getText(); 
+                if (userInput.length() >= 3 && userInput.length() <= 20 && userInput.matches("[a-zA-Z]+")) 
+                {
+                    JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + userInput);
+	                CreateLevelSelection();
+                }
+                else
+                {
+                	JOptionPane.showMessageDialog(GameManager.frame, "Name must be 3-20 characters and contain only letters.");
+                	enterField.setText("");
+                }
+            }
+        });
+
+        JPanel titleMenuSplitPanel = new JPanel();
+        titleMenuSplitPanel.setLayout(new BoxLayout(titleMenuSplitPanel, BoxLayout.Y_AXIS));
+        titleMenuSplitPanel.setBackground(Color.BLACK);
+        
+        JPanel logoContainer = new JPanel();
+        logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
+        logoContainer.setOpaque(false);
+        
+        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/main/icons/MainGameLogo.png"));
+        Image scaledImage = logoIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(scaledImage);
+       
+        JLabel gameLogo = new JLabel(logoIcon);
+        logoContainer.add(gameLogo);
+
+        panel.add(instructionText);
+        panel.add(Box.createVerticalStrut(10)); 
+        panel.add(enterField);
+        panel.add(Box.createVerticalStrut(10)); 
+        panel.add(button);
+        
+        titleMenuSplitPanel.add(titlePanel); 
+        titleMenuSplitPanel.add(logoContainer);
+        titleMenuSplitPanel.add(panel);
+        centerPanel.add(titleMenuSplitPanel);
+        
+        //Credits
+        JPanel creditsPanel = new JPanel();
+        creditsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+        JLabel credits = new JLabel("MADE BY OLEG SHAPOVALOV");
+        credits.setForeground(Color.WHITE);
+        creditsPanel.add(credits);
+        creditsPanel.setBackground(Color.BLACK);
+
+        GameManager.frame.add(creditsPanel, BorderLayout.SOUTH);
+        
+        GameManager.frame.add(centerPanel, BorderLayout.CENTER);
+        
+        GameManager.frame.revalidate(); 
+        GameManager.frame.repaint();   
+    }
+
+	public void CreateLevelSelection() // Switches to level selection
+	{
+	    GameManager.frame.getContentPane().removeAll();
+	
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    centerPanel.setBackground(Color.black);
+	
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	
+	    // Main text area
+	    JTextArea textArea = new JTextArea("\nYou are in charge of water rescue operations.\nUse assets to save as many lives as possible.");
+	    textArea.setLineWrap(true);
+	    textArea.setWrapStyleWord(true);
+	    textArea.setEditable(false);
+	    textArea.setBackground(Color.lightGray);
+	    textArea.setPreferredSize(new Dimension(500, 100));
+	    textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	
+	    // Scenario and Asset Details Area
+	    JPanel detailsPanel = new JPanel(new BorderLayout());
+	    detailsPanel.setBackground(Color.darkGray);
+	    detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	
+	    JTextArea scenarioTextArea = new JTextArea("\nChoose a scenario.");
+	    scenarioTextArea.setLineWrap(true);
+	    scenarioTextArea.setWrapStyleWord(true);
+	    scenarioTextArea.setEditable(false);
+	    scenarioTextArea.setBackground(Color.lightGray);
+	    scenarioTextArea.setPreferredSize(new Dimension(225, 100));
+	    scenarioTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	
+	    JTextArea assetTextArea = new JTextArea();
+	    assetTextArea.setLineWrap(true);
+	    assetTextArea.setWrapStyleWord(true);
+	    assetTextArea.setEditable(false);
+	    assetTextArea.setBackground(Color.lightGray);
+	    assetTextArea.setPreferredSize(new Dimension(225, 300));
+	    assetTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	
+	    detailsPanel.add(scenarioTextArea, BorderLayout.WEST);
+	    detailsPanel.add(assetTextArea, BorderLayout.EAST);
+	
+	    // Panel for Main Information Text and Details
+	    JPanel infoPanel = new JPanel();
+	    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+	    infoPanel.setBackground(Color.darkGray);
+	    infoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	    infoPanel.add(textArea);
+	    infoPanel.add(Box.createVerticalStrut(10));
+	    infoPanel.add(detailsPanel);
+	
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    centerPanel.add(infoPanel, gbc);
+	
+	    // Scenario Selection Panel
+	    JPanel selectionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    selectionPanel.setBackground(Color.darkGray);
+	    selectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	
+	    JButton startGameButton = new JButton("START SCENARIO");
+	    startGameButton.setEnabled(false);
+	    startGameButton.setPreferredSize(standardButtonSize);
+	    startGameButton.addActionListener(e -> GameManager.instance.CreateMainGame(GameManager.chosenScenario));
+	
+	    LinkedList<Scenario> scenarios = ScenarioManager.getScenarios();
+	
+	    for (Scenario scenario : scenarios) {
+	        JButton scenarioButton = new JButton(scenario.name);
+	        scenarioButton.addActionListener(e -> {
+	            StringBuilder assetsInfo = new StringBuilder();
+	            for (Asset asset : scenario.assets) {
+	                assetsInfo.append("\n").append(asset.name)
+	                          .append("\n(");
+	                if (asset instanceof Vehicle) 
+	                {
+	                    Vehicle vehicle = (Vehicle) asset;
+	                    String pattern = "complex";
+	                    if(vehicle.movePattern.length == 1)
+	                    {
+	                    	pattern = "pattern: (" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
+	                    }
+	                    assetsInfo.append(pattern);
+	                } else if (asset instanceof Sonar) {
+	                    Sonar sonar = (Sonar) asset;
+	                    assetsInfo.append("Radius: ").append(sonar.radius);
+	                }
+	                assetsInfo.append(", Amount: ").append(asset.amount).append(")\n");
+	            }
+	
+	            scenarioTextArea.setText("\n" + scenario.name + "\n\nSize: " + scenario.size + " x " + scenario.size + " NM\n\nSurvivors: " + scenario.survivors + "\n\n" + scenario.description);
+	            assetTextArea.setText("\nASSETS:\n" + assetsInfo.toString());
+	            GameManager.chosenScenario = scenario;
+	            startGameButton.setEnabled(true);
+	        });
+	        selectionPanel.add(scenarioButton);
+	    }
+	
+	    gbc.gridy = 1;
+	    centerPanel.add(selectionPanel, gbc);
+	
+	    // Bottom Panel with Start Button
+	    JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    bottomPanel.setBackground(Color.darkGray);
+	    bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	    bottomPanel.add(startGameButton);
+	
+	    gbc.gridy = 2;
+	    centerPanel.add(bottomPanel, gbc);
+	
+	    GameManager.frame.add(centerPanel, BorderLayout.CENTER);
+	    GameManager.frame.revalidate();
+	    GameManager.frame.repaint();
+	}
+
+    
+    protected void createIcon(JLabel icon)
     {
         iconPanel.add(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    public void removeIcon(JLabel icon)
+    protected void removeIcon(JLabel icon)
     {
         iconPanel.remove(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    public void setVisualCoordinates(int x, int y)
+    protected void setVisualCoordinates(int x, int y)
     {
     	xCorVisual.setText(Integer.toString(x));
     	yCorVisual.setText(Integer.toString(y));
@@ -60,7 +290,7 @@ public class UiManager
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BorderLayout());
         assetPanel.setBackground(Color.darkGray);
-        assetPanel.setPreferredSize(new Dimension(width, WaterRescueGame.instance.frame.getHeight()));
+        assetPanel.setPreferredSize(new Dimension(width, GameManager.frame.getHeight()));
         assetPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
         return assetPanel;
     }
@@ -126,7 +356,7 @@ public class UiManager
         centerPanel.setBackground(Color.DARK_GRAY);
         
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension((int) (WaterRescueGame.instance.frame.getHeight() * 0.9f), (int) (WaterRescueGame.instance.frame.getHeight() * 0.9f)));
+        layeredPane.setPreferredSize(new Dimension((int) (GameManager.frame.getHeight() * 0.9f), (int) (GameManager.frame.getHeight() * 0.9f)));
 
         JPanel grid = new JPanel();
         grid.setBackground(Color.BLACK);
@@ -152,14 +382,14 @@ public class UiManager
                 gameField.setToolTipText("AREA: (" + r + ", " + c+ ")");
                 
                 grid.add(gameField);
-                WaterRescueGame.instance.buttons[column][row] = gameField;
+                GameManager.instance.buttons[column][row] = gameField;
 
                 gameField.addActionListener(new ActionListener() 
                 {
                     @Override
                     public void actionPerformed(ActionEvent e) 
                     {
-                        WaterRescueGame.instance.selectButton(c, r);
+                        GameManager.instance.selectButton(c, r);
                     }
                 });
             }
@@ -183,7 +413,7 @@ public class UiManager
     {
         for (Asset asset : assets) 
         {
-        	WaterRescueGame.instance.usesLeft += asset.amount;
+        	GameManager.instance.usesLeft += asset.amount;
         	
             JPanel assetWindow = new JPanel();
             assetWindow.setBackground(Color.gray);
@@ -212,7 +442,7 @@ public class UiManager
             buttonsPanel.setBackground(Color.gray);
             
             JButton selectButton = new JButton("PREVIEW");
-            selectButton.setMaximumSize(WaterRescueGame.standardButtonSize);
+            selectButton.setMaximumSize(standardButtonSize);
             selectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             selectButton.addActionListener(new ActionListener() 
@@ -220,12 +450,12 @@ public class UiManager
                 @Override
                 public void actionPerformed(ActionEvent e) 
                 {
-                    WaterRescueGame.instance.previewAssetRange(asset);
+                    GameManager.instance.previewAssetRange(asset);
                 }
             });
             
             JButton deployButton = new JButton("DEPLOY");
-            deployButton.setMaximumSize(WaterRescueGame.standardButtonSize);
+            deployButton.setMaximumSize(standardButtonSize);
             deployButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             
             deployButton.addActionListener(new ActionListener()
@@ -233,7 +463,7 @@ public class UiManager
             	@Override
             	public void actionPerformed(ActionEvent e)
             	{
-            		WaterRescueGame.instance.UseAsset(asset);
+            		GameManager.instance.UseAsset(asset);
             	}
             });
             
@@ -281,7 +511,7 @@ public class UiManager
 
     protected void createGameCanvas(Scenario scenario)
     {
-        int eastPanelWidth = (int)(WaterRescueGame.instance.frame.getWidth() * 0.2f);
+        int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
         JPanel eastPanel = UiManager.instance.createEastPanel(eastPanelWidth);
         JPanel mainGamePanel = UiManager.instance.createMainGamePanel(scenario.size);
         assetPanel = UiManager.instance.createAssetPanel();
@@ -289,11 +519,11 @@ public class UiManager
         eastPanel.add(assetPanel, BorderLayout.CENTER);
         eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
         
-        WaterRescueGame.instance.placePeople(scenario);
+        GameManager.instance.placePeople(scenario);
         drawAssets(assetPanel, scenario.assets);
 
-        WaterRescueGame.instance.frame.add(mainGamePanel, BorderLayout.CENTER);
-        WaterRescueGame.instance.frame.add(eastPanel, BorderLayout.EAST);
+        GameManager.frame.add(mainGamePanel, BorderLayout.CENTER);
+        GameManager.frame.add(eastPanel, BorderLayout.EAST);
 
     }
 }

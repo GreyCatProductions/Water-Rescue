@@ -3,13 +3,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.border.Border;
 
-public class WaterRescueGame extends JFrame 
+public class GameManager extends JFrame 
 {
-	public static Dimension standardButtonSize = new Dimension(175, 25);
-    public JFrame frame;
-    private Scenario chosenScenario;
+    public static JFrame frame;
+    protected static Scenario chosenScenario;
     
     protected JButton[][] buttons;
     protected int[][] survivors;
@@ -28,9 +26,9 @@ public class WaterRescueGame extends JFrame
 
     private ImageIcon gameIcon;
     
-    public static WaterRescueGame instance;
+    public static GameManager instance;
     
-    public WaterRescueGame() //Prepares frame and opens main menu
+    public GameManager() //Prepares frame and opens main menu
     {
     	instance = this;
     	frame = this;
@@ -43,273 +41,10 @@ public class WaterRescueGame extends JFrame
     	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
         frame.setIconImage(gameIcon.getImage());
     
-        CreateMainMenu();
+        UiManager.instance.CreateMainMenu();
         setVisible(true);
     }
     
-    public void CreateMainMenu() //Switches to main menu
-    {
-        frame.getContentPane().removeAll(); 
-
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridBagLayout());
-        centerPanel.setBackground(Color.black); 
-        
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(Color.black);
-
-        JLabel title = new JLabel("WATER RESCUE OPERATOR");
-        title.setForeground(GameColors.selectedColor);
-        title.setBackground(Color.black);
-        title.setHorizontalAlignment(JLabel.CENTER);
-        Font currentFont = title.getFont();
-        Font newFont = currentFont.deriveFont(64f);
-        title.setFont(newFont);
-        title.setBorder(null);
-
-        titlePanel.add(title);
-        
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(Color.darkGray);
-        
-        JLabel instructionText = new JLabel("ENTER YOUR NAME");
-        instructionText.setHorizontalAlignment(JLabel.CENTER); 
-        instructionText.setBorder(null);
-        instructionText.setForeground(Color.WHITE);
-        instructionText.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton button = new JButton("Start Game");
-        button.setPreferredSize(standardButtonSize);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        JTextField enterField = new JTextField(15);
-        enterField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        enterField.setHorizontalAlignment(JTextField.CENTER); 
-        enterField.setMaximumSize(new Dimension(200, 20)); 
-        
-        button.addActionListener(new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String userInput = enterField.getText(); 
-                if (userInput.length() >= 3 && userInput.length() <= 20 && userInput.matches("[a-zA-Z]+")) 
-                {
-                    JOptionPane.showMessageDialog(frame, "Playing as: " + userInput);
-	                CreateLevelSelection();
-                }
-                else
-                {
-                	JOptionPane.showMessageDialog(frame, "Name must be 3-20 characters and contain only letters.");
-                	enterField.setText("");
-                }
-            }
-        });
-
-        JPanel titleMenuSplitPanel = new JPanel();
-        titleMenuSplitPanel.setLayout(new BoxLayout(titleMenuSplitPanel, BoxLayout.Y_AXIS));
-        titleMenuSplitPanel.setBackground(Color.BLACK);
-        
-        JPanel logoContainer = new JPanel();
-        logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
-        logoContainer.setOpaque(false);
-        
-        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/main/icons/MainGameLogo.png"));
-        Image scaledImage = logoIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-        logoIcon = new ImageIcon(scaledImage);
-       
-        JLabel gameLogo = new JLabel(logoIcon);
-        logoContainer.add(gameLogo);
-
-        panel.add(instructionText);
-        panel.add(Box.createVerticalStrut(10)); 
-        panel.add(enterField);
-        panel.add(Box.createVerticalStrut(10)); 
-        panel.add(button);
-        
-        titleMenuSplitPanel.add(titlePanel); 
-        titleMenuSplitPanel.add(logoContainer);
-        titleMenuSplitPanel.add(panel);
-        centerPanel.add(titleMenuSplitPanel);
-        
-        //Credits
-        JPanel creditsPanel = new JPanel();
-        creditsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
-        JLabel credits = new JLabel("MADE BY OLEG SHAPOVALOV");
-        credits.setForeground(Color.WHITE);
-        creditsPanel.add(credits);
-        creditsPanel.setBackground(Color.BLACK);
-
-        frame.add(creditsPanel, BorderLayout.SOUTH);
-        
-        frame.add(centerPanel, BorderLayout.CENTER);
-        
-        frame.revalidate(); 
-        frame.repaint();   
-    }
-
-	public void CreateLevelSelection() // Switches to level selection
-	{
-	    frame.getContentPane().removeAll();
-	
-	    JPanel centerPanel = new JPanel(new GridBagLayout());
-	    centerPanel.setBackground(Color.black);
-	
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.fill = GridBagConstraints.HORIZONTAL;
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	
-	    // Main text area
-	    JTextArea textArea = new JTextArea("\nYou are in charge of water rescue operations.\nUse assets to save as many lives as possible.");
-	    textArea.setLineWrap(true);
-	    textArea.setWrapStyleWord(true);
-	    textArea.setEditable(false);
-	    textArea.setBackground(Color.lightGray);
-	    textArea.setPreferredSize(new Dimension(500, 100));
-	    textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	
-	    // Scenario and Asset Details Area
-	    JPanel detailsPanel = new JPanel(new BorderLayout());
-	    detailsPanel.setBackground(Color.darkGray);
-	    detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	
-	    JTextArea scenarioTextArea = new JTextArea("\nChoose a scenario.");
-	    scenarioTextArea.setLineWrap(true);
-	    scenarioTextArea.setWrapStyleWord(true);
-	    scenarioTextArea.setEditable(false);
-	    scenarioTextArea.setBackground(Color.lightGray);
-	    scenarioTextArea.setPreferredSize(new Dimension(225, 100));
-	    scenarioTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	
-	    JTextArea assetTextArea = new JTextArea();
-	    assetTextArea.setLineWrap(true);
-	    assetTextArea.setWrapStyleWord(true);
-	    assetTextArea.setEditable(false);
-	    assetTextArea.setBackground(Color.lightGray);
-	    assetTextArea.setPreferredSize(new Dimension(225, 300));
-	    assetTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	
-	    detailsPanel.add(scenarioTextArea, BorderLayout.WEST);
-	    detailsPanel.add(assetTextArea, BorderLayout.EAST);
-	
-	    // Panel for Main Information Text and Details
-	    JPanel infoPanel = new JPanel();
-	    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-	    infoPanel.setBackground(Color.darkGray);
-	    infoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	    infoPanel.add(textArea);
-	    infoPanel.add(Box.createVerticalStrut(10));
-	    infoPanel.add(detailsPanel);
-	
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    centerPanel.add(infoPanel, gbc);
-	
-	    // Scenario Selection Panel
-	    JPanel selectionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    selectionPanel.setBackground(Color.darkGray);
-	    selectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	
-	    JButton startGameButton = new JButton("START SCENARIO");
-	    startGameButton.setEnabled(false);
-	    startGameButton.setPreferredSize(standardButtonSize);
-	    startGameButton.addActionListener(e -> CreateMainGame(chosenScenario));
-	
-	    LinkedList<Scenario> scenarios = createScenarios();
-	
-	    for (Scenario scenario : scenarios) {
-	        JButton scenarioButton = new JButton(scenario.name);
-	        scenarioButton.addActionListener(e -> {
-	            StringBuilder assetsInfo = new StringBuilder();
-	            for (Asset asset : scenario.assets) {
-	                assetsInfo.append("\n").append(asset.name)
-	                          .append("\n(");
-	                if (asset instanceof Vehicle) 
-	                {
-	                    Vehicle vehicle = (Vehicle) asset;
-	                    String pattern = "complex";
-	                    if(vehicle.movePattern.length == 1)
-	                    {
-	                    	pattern = "pattern: (" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
-	                    }
-	                    assetsInfo.append(pattern);
-	                } else if (asset instanceof Sonar) {
-	                    Sonar sonar = (Sonar) asset;
-	                    assetsInfo.append("Radius: ").append(sonar.radius);
-	                }
-	                assetsInfo.append(", Amount: ").append(asset.amount).append(")\n");
-	            }
-	
-	            scenarioTextArea.setText("\n" + scenario.name + "\n\nSize: " + scenario.size + " x " + scenario.size + " NM\n\nSurvivors: " + scenario.survivors + "\n\n" + scenario.description);
-	            assetTextArea.setText("\nASSETS:\n" + assetsInfo.toString());
-	            chosenScenario = scenario;
-	            startGameButton.setEnabled(true);
-	        });
-	        selectionPanel.add(scenarioButton);
-	    }
-	
-	    gbc.gridy = 1;
-	    centerPanel.add(selectionPanel, gbc);
-	
-	    // Bottom Panel with Start Button
-	    JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    bottomPanel.setBackground(Color.darkGray);
-	    bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	    bottomPanel.add(startGameButton);
-	
-	    gbc.gridy = 2;
-	    centerPanel.add(bottomPanel, gbc);
-	
-	    frame.add(centerPanel, BorderLayout.CENTER);
-	    frame.revalidate();
-	    frame.repaint();
-	}
-
-	private LinkedList<Scenario> createScenarios() //creates scenarios for level selection
-	{
-    	LinkedList<Scenario> scenarios = new LinkedList<Scenario>();
-        
-        scenarios.add(new Scenario("Lake", 10, 4, 30,"A harsh storm summoned fast. The fishermen did not have time to leave it. 4 boats and 30 people are missing."
-        		+ " The local fire department gave you all the ressources it has. Its not much but its all they have.",      		
-        		new Asset[]{
-        		new Vehicle ("Small Airtanker", 2, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a small area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
-        		
-        		new Vehicle ("Local Pilot", 1, false, new CoordinateStep[] {new CoordinateStep(2, 1, false), new CoordinateStep(2, 1, false), new CoordinateStep(1, 2, false), new CoordinateStep(2, 1, false), new CoordinateStep(3, 1, false)
-        				}, false, "Hobby pilot offers to search. But he will not change his course.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
-        		
-        		new Vehicle ("Large Aitranker", 1, true, new CoordinateStep[] {new CoordinateStep(3, 4, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/big airtanker.png"))), 
-        		
-        		new Vehicle ("Dinghie", 5, true, new CoordinateStep[] {new CoordinateStep(1, 1, false)}, true, "Small but fast. Rescues survivors", new ImageIcon(getClass().getResource("/main/icons/dinghie.png"))),
-        		new Sonar ("Short Range Sonar Buoy", 2, 5, 0.4f, "Uses sonar to listen for survivors. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
-        }));
-        
-        scenarios.add(new Scenario("Bay", 15, 5, 40,"The calm waters of the bay were quickly turned into a dangerous trap when an unexpected fog rolled in. "
-        		+ "5 groups of recreational sailors are missing. The coast guard has mobilized what they can, but time is running out as the visibility decreases.",
-        		new Asset[]{
-        				new Vehicle ("Oiltanker", 1, false, new CoordinateStep[] {new CoordinateStep(15, 1, false)}, true, "An Oiltanker passes the water. We can ask the crew to choose a certain latitude", gameIcon), 
-               		new Vehicle ("Scoutplane", 3, true, new CoordinateStep[] {new CoordinateStep(2, 3, false)}, false, "Searches a big area and marks found survivors", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))), 
-               		new Vehicle ("Dinghie", 2, true,new CoordinateStep[] {new CoordinateStep(1, 1, false)}, true, "Small but fast. Rescues survivors", new ImageIcon(getClass().getResource("/main/icons/dinghie.png"))),
-               		new Vehicle ("Rescue Ship", 3, true,new CoordinateStep[] {new CoordinateStep(3, 3, false)}, true, "Ship specialized on rescue operations. Rescues survivors.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
-               		new Sonar ("Sonar Buoy V1", 3, 5, 0.3f, "Uses sonar to listen for survivors. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png"))),
-               		new Sonar ("Sonar Buoy V2", 1, 7, 0.25f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
-       		}));
-        
-        scenarios.add(new Scenario("Sea", 25, 5, 140,"An unusually strong current has swept away several ships, leaving their crews stranded in the sea. 140 people are missing. We dont know how many ships.", 
-        		new Asset[]{}));
-        
-        scenarios.add(new Scenario("Shore", 33, 3, 50,"", new Asset[]{}));
-        
-        scenarios.add(new Scenario("Ocean", 40, 3, 50,"", new Asset[]{
-           		new Vehicle ("Rescue Ship", 3, true,new CoordinateStep[] {new CoordinateStep(3, 3, false)}, true, "Ship specialized on rescue operations. Rescues survivors.", new ImageIcon(getClass().getResource("/main/icons/Small airtanker.png"))),
-        		new Sonar ("Sonar Buoy V5", 1, 15, 0.05f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", new ImageIcon(getClass().getResource("/main/icons/buoy.png")))
-        }));
-        
-    	
-    	return scenarios;
-    }
-
     public void CreateMainGame(Scenario scenario) //Switches to main game with a scenario
     {
         frame.getContentPane().removeAll(); 
@@ -790,7 +525,7 @@ public class WaterRescueGame extends JFrame
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CreateLevelSelection();
+                UiManager.instance.CreateLevelSelection();
                 dialog.dispose();
             }
         });
@@ -814,6 +549,6 @@ public class WaterRescueGame extends JFrame
         UIManager.put("MenuItem.font", mainFont);
         new SaveSystem("Water Rescue Operator");
         new UiManager();
-    	new WaterRescueGame();
+    	new GameManager();
     }
 }
