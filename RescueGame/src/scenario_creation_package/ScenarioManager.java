@@ -1,7 +1,9 @@
-package main;
+package scenario_creation_package;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import icons.IconManager;
 
 public class ScenarioManager 
 {

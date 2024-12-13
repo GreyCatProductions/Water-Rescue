@@ -1,35 +1,42 @@
 package main;
 import javax.swing.*;
+
+import icons.IconManager;
+import scenario_creation_package.Asset;
+import scenario_creation_package.CoordinateStep;
+import scenario_creation_package.Scenario;
+import scenario_creation_package.Sonar;
+import scenario_creation_package.Vehicle;
+import ui_package.GameColors;
+import ui_package.UiManager;
+
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 
 public class GameManager extends JFrame 
 {
 	private static final long serialVersionUID = 1L;
 	public static JFrame frame;
-    protected static Scenario chosenScenario;
+	public static Scenario chosenScenario;
     
-    protected JButton[][] buttons;
-    protected int[][] survivors;
-    protected Boolean[][] changedFields;
-    protected int survivorsSaved = 0;
-    protected int usesLeft;
-    protected Boolean[][] searchedFields; 
-    protected Boolean[][] foundFields;
-    protected Boolean[][] rescuedFields;
-    protected Boolean[][] markedFields; 
+    public JButton[][] buttons;
+    public int[][] survivors;
+    public Boolean[][] changedFields;
+    public int survivorsSaved = 0;
+    public int usesLeft;
+    public Boolean[][] searchedFields; 
+    public Boolean[][] foundFields;
+    public Boolean[][] rescuedFields;
+    public Boolean[][] markedFields; 
     
     private int selectedX = -1;
     private int selectedY = -1;
     
     Set<Thread> activeThreads = new HashSet<>();
-
-    private ImageIcon gameIcon;
     
     public static GameManager instance;
     
-    public GameManager() //Prepares frame and opens main menu
+    private GameManager() //Prepares frame and opens main menu
     {
     	instance = this;
     	frame = this;
@@ -39,14 +46,13 @@ public class GameManager extends JFrame
         frame.setUndecorated(true);
         frame.getContentPane().setBackground(Color.black);
         frame.setLayout(new BorderLayout());;
-    	gameIcon = new ImageIcon(getClass().getResource("WaterRescueOperator.png"));
-        frame.setIconImage(gameIcon.getImage());
+        frame.setIconImage(IconManager.main_menu_image.getImage());
     
         UiManager.instance.CreateMainMenu();
         setVisible(true);
     }
     
-    public void CreateMainGame(Scenario scenario) //Switches to main game with a scenario
+    public void InitializeMainGame(Scenario scenario) //Switches to main game with a scenario
     {
         frame.getContentPane().removeAll(); 
 
@@ -77,7 +83,7 @@ public class GameManager extends JFrame
         frame.repaint();  
     }
 
-    protected void UseAsset(Asset assetToUse) 
+    public void UseAsset(Asset assetToUse) 
     {
 	    if (assetToUse.amount <= 0) {
 	        JOptionPane.showMessageDialog(null, "No more uses left for " + assetToUse.name);
@@ -86,7 +92,7 @@ public class GameManager extends JFrame
 	
 	    usesLeft--;
 	    assetToUse.amount--;
-	    UiManager.instance.SetText(assetToUse);
+	    UiManager.instance.updateAssetText(assetToUse);
 	
         if (assetToUse instanceof Sonar) 
         {
@@ -347,7 +353,7 @@ public class GameManager extends JFrame
 	    }
     }
 
-    protected void placePeople(Scenario scenario) 
+    public void placePeople(Scenario scenario) 
     {
         Random rand = new Random();
         int[] clusters = new int[scenario.clusters];
@@ -390,7 +396,7 @@ public class GameManager extends JFrame
     	}
     }
     
-    protected void previewAssetRange(Asset asset)
+    public void previewAssetRange(Asset asset)
     {
     	if(selectedX == -1 || selectedY == -1)
     		return;
@@ -506,7 +512,6 @@ public class GameManager extends JFrame
         UIManager.put("TextArea.font", mainFont);
         UIManager.put("TextPane.font", mainFont);
         UIManager.put("MenuItem.font", mainFont);
-        new SaveSystem("Water Rescue Operator");
         new UiManager();
     	new GameManager();
     }

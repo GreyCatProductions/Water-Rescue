@@ -1,4 +1,4 @@
-package main;
+package ui_package;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,7 +13,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,6 +28,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+
+import icons.IconManager;
+import main.GameManager;
+import main.SaveLoadManager;
+import scenario_creation_package.Asset;
+import scenario_creation_package.Scenario;
+import scenario_creation_package.ScenarioManager;
+import scenario_creation_package.Sonar;
+import scenario_creation_package.Vehicle;
 
 public class UiManager
 {
@@ -47,7 +55,7 @@ public class UiManager
     	instance = this;
     }
     
-    protected void CreateMainMenu() //Switches to main menu
+    public void CreateMainMenu() //Switches to main menu
     {
         GameManager.frame.getContentPane().removeAll(); 
 
@@ -116,7 +124,7 @@ public class UiManager
         logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
         logoContainer.setOpaque(false);
         
-        ImageIcon logoIcon = new ImageIcon(getClass().getResource("/main/icons/MainGameLogo.png"));
+        ImageIcon logoIcon = IconManager.main_menu_image;
         Image scaledImage = logoIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(scaledImage);
        
@@ -215,7 +223,7 @@ public class UiManager
 	    JButton startGameButton = new JButton("START SCENARIO");
 	    startGameButton.setEnabled(false);
 	    startGameButton.setPreferredSize(standardButtonSize);
-	    startGameButton.addActionListener(e -> GameManager.instance.CreateMainGame(GameManager.chosenScenario));
+	    startGameButton.addActionListener(e -> GameManager.instance.InitializeMainGame(GameManager.chosenScenario));
 	
 	    int[] highscores = SaveLoadManager.getStats(chosenUserName);
 	    
@@ -269,29 +277,28 @@ public class UiManager
 	    GameManager.frame.revalidate();
 	    GameManager.frame.repaint();
 	}
-
-    
-    protected void createIcon(JLabel icon)
+   
+    public void createIcon(JLabel icon)
     {
         iconPanel.add(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    protected void removeIcon(JLabel icon)
+    public void removeIcon(JLabel icon)
     {
         iconPanel.remove(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    protected void setVisualCoordinates(int x, int y)
+    public void setVisualCoordinates(int x, int y)
     {
     	xCorVisual.setText(Integer.toString(x));
     	yCorVisual.setText(Integer.toString(y));
     }
     
-    protected JPanel createEastPanel(int width) 
+    private JPanel createEastPanel(int width) 
     {
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BorderLayout());
@@ -301,7 +308,7 @@ public class UiManager
         return assetPanel;
     }
     
-    protected JPanel createAssetPanel() 
+    private JPanel createAssetPanel() 
     {
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
@@ -309,7 +316,7 @@ public class UiManager
         return assetPanel;
     }
     
-    protected JPanel createCoordinatesPanel()
+    private JPanel createCoordinatesPanel()
     {
     	JPanel coordinatesPanel = new JPanel();
     	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
@@ -353,7 +360,7 @@ public class UiManager
     	return coordinatesPanel;
     }
     
-    protected JPanel createMainGamePanel(int size) 
+    private JPanel createMainGamePanel(int size) 
     {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         mainGamePanel.setBackground(Color.DARK_GRAY);
@@ -414,9 +421,8 @@ public class UiManager
 
         return mainGamePanel;
     }
-
     
-    protected void endGame(int survivorsSaved) //Enables end screen
+    public void endGame(int survivorsSaved) //Enables end screen
     {
     	int[] stats = SaveLoadManager.getStats(chosenUserName);
     	stats[ScenarioManager.scenarios.indexOf(GameManager.chosenScenario)] = survivorsSaved;
@@ -462,7 +468,7 @@ public class UiManager
         dialog.setVisible(true); 
     }
     
-    protected void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
+    public void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
     {
         for (Asset asset : assets) 
         {
@@ -474,7 +480,7 @@ public class UiManager
  
             JTextArea statsTextArea = new JTextArea();
             asset.myTextArea = statsTextArea;
-            SetText(asset);
+            updateAssetText(asset);
             statsTextArea.setLineWrap(true);
             statsTextArea.setWrapStyleWord(true);
             statsTextArea.setOpaque(false);
@@ -538,7 +544,7 @@ public class UiManager
         }
     }
 
-    protected void SetText(Asset asset)
+    public void updateAssetText(Asset asset)
     {
         String textAdd = "";
         if (asset instanceof Vehicle) {
@@ -562,7 +568,7 @@ public class UiManager
 	    assetPanel.repaint();
     }
 
-    protected void createGameCanvas(Scenario scenario)
+    public void createGameCanvas(Scenario scenario)
     {
         int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
         JPanel eastPanel = UiManager.instance.createEastPanel(eastPanelWidth);

@@ -1,4 +1,4 @@
-package main;
+package scenario_creation_package;
 
 public class Scenario 
 {

@@ -1,4 +1,4 @@
-package main;
+package scenario_creation_package;
 import javax.swing.ImageIcon;
 
 public class Vehicle extends Asset 

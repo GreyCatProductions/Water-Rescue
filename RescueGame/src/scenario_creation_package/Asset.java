@@ -1,14 +1,14 @@
-package main;
+package scenario_creation_package;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
 
-public class Asset 
+public abstract class Asset 
 {
     public String name;
     public int amount;
     public JTextArea myTextArea;
-    String description;
+    public String description;
     public ImageIcon icon;
 
     public Asset(String name, int amount, String description, ImageIcon icon) 

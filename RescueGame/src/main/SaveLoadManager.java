@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import scenario_creation_package.ScenarioManager;
+
 public class SaveLoadManager 
 {
 	private static String gameDir = System.getProperty("user.dir");
