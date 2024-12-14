@@ -55,7 +55,7 @@ public class UiManager
     	instance = this;
     }
     
-    public void CreateMainMenu() //Switches to main menu
+    public void CreateMainMenu() //Baut Hauptmenü
     {
         GameManager.frame.getContentPane().removeAll(); 
 
@@ -158,7 +158,7 @@ public class UiManager
         GameManager.frame.repaint();   
     }
 
-	public void CreateLevelSelection() // Switches to level selection
+	public void CreateLevelSelection() //Baut Level-Auswahlmenü
 	{
 	    GameManager.frame.getContentPane().removeAll();
 	
@@ -278,37 +278,54 @@ public class UiManager
 	    GameManager.frame.repaint();
 	}
    
-    public void createIcon(JLabel icon)
+    public void createGameCanvas(Scenario scenario) //Konstruiert Spiel-Menü
+    {
+        int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
+        JPanel eastPanel = createEastPanel(eastPanelWidth);
+        JPanel mainGamePanel = createMainGamePanel(scenario.size);
+        assetPanel = createAssetPanel();
+        JPanel coordinatesPanel = createCoordinatesPanel();
+        eastPanel.add(assetPanel, BorderLayout.CENTER);
+        eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
+        
+        GameManager.instance.placePeople(scenario);
+        drawAssets(assetPanel, scenario.assets);
+
+        GameManager.frame.add(mainGamePanel, BorderLayout.CENTER);
+        GameManager.frame.add(eastPanel, BorderLayout.EAST);
+    }
+	
+    public void createIcon(JLabel icon) //Erstellt gegebenes Icon
     {
         iconPanel.add(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    public void removeIcon(JLabel icon)
+    public void removeIcon(JLabel icon) //Entfernt gegebenes Icon
     {
         iconPanel.remove(icon);
         iconPanel.revalidate();
         iconPanel.repaint();
     }
     
-    public void setVisualCoordinates(int x, int y)
+    public void setVisualCoordinates(int x, int y) //aktuallisiert Koordinatenfelder
     {
     	xCorVisual.setText(Integer.toString(x));
     	yCorVisual.setText(Integer.toString(y));
     }
     
-    private JPanel createEastPanel(int width) 
+    private JPanel createEastPanel(int width) //erstellt Panel für die östliche Seite
     {
-        JPanel assetPanel = new JPanel();
-        assetPanel.setLayout(new BorderLayout());
-        assetPanel.setBackground(Color.darkGray);
-        assetPanel.setPreferredSize(new Dimension(width, GameManager.frame.getHeight()));
-        assetPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
-        return assetPanel;
+        JPanel eastPanel = new JPanel();
+        eastPanel.setLayout(new BorderLayout());
+        eastPanel.setBackground(Color.darkGray);
+        eastPanel.setPreferredSize(new Dimension(width, GameManager.frame.getHeight()));
+        eastPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
+        return eastPanel;
     }
     
-    private JPanel createAssetPanel() 
+    private JPanel createAssetPanel() //Erstellt Asset panel
     {
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
@@ -316,7 +333,7 @@ public class UiManager
         return assetPanel;
     }
     
-    private JPanel createCoordinatesPanel()
+    private JPanel createCoordinatesPanel() //Erstellt Koordinatenfelder
     {
     	JPanel coordinatesPanel = new JPanel();
     	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
@@ -360,7 +377,7 @@ public class UiManager
     	return coordinatesPanel;
     }
     
-    private JPanel createMainGamePanel(int size) 
+    private JPanel createMainGamePanel(int size) //Erstellt Spielfeld
     {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         mainGamePanel.setBackground(Color.DARK_GRAY);
@@ -422,7 +439,7 @@ public class UiManager
         return mainGamePanel;
     }
     
-    public void endGame(int survivorsSaved) //Enables end screen
+    public void endGame(int survivorsSaved) //Beendet das Spiel
     {
     	int[] stats = SaveLoadManager.getStats(chosenUserName);
     	stats[ScenarioManager.scenarios.indexOf(GameManager.chosenScenario)] = survivorsSaved;
@@ -468,7 +485,7 @@ public class UiManager
         dialog.setVisible(true); 
     }
     
-    public void drawAssets(JPanel panelToDrawOn, Asset[] assets) 
+    public void drawAssets(JPanel panelToDrawOn, Asset[] assets) //Erstellt alle Assets auf dem gegebenen panel
     {
         for (Asset asset : assets) 
         {
@@ -544,7 +561,7 @@ public class UiManager
         }
     }
 
-    public void updateAssetText(Asset asset)
+    public void updateAssetText(Asset asset) //aktualisiert Text auf Asset Feld
     {
         String textAdd = "";
         if (asset instanceof Vehicle) {
@@ -566,23 +583,5 @@ public class UiManager
         }
 	    assetPanel.revalidate();
 	    assetPanel.repaint();
-    }
-
-    public void createGameCanvas(Scenario scenario)
-    {
-        int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
-        JPanel eastPanel = UiManager.instance.createEastPanel(eastPanelWidth);
-        JPanel mainGamePanel = UiManager.instance.createMainGamePanel(scenario.size);
-        assetPanel = UiManager.instance.createAssetPanel();
-        JPanel coordinatesPanel = UiManager.instance.createCoordinatesPanel();
-        eastPanel.add(assetPanel, BorderLayout.CENTER);
-        eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
-        
-        GameManager.instance.placePeople(scenario);
-        drawAssets(assetPanel, scenario.assets);
-
-        GameManager.frame.add(mainGamePanel, BorderLayout.CENTER);
-        GameManager.frame.add(eastPanel, BorderLayout.EAST);
-
     }
 }

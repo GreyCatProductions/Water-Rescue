@@ -36,7 +36,7 @@ public class GameManager extends JFrame
     
     public static GameManager instance;
     
-    private GameManager() //Prepares frame and opens main menu
+    private GameManager() //Konstruiert das JFrame und ruft Hauptmenü Erstellung auf
     {
     	instance = this;
     	frame = this;
@@ -52,7 +52,7 @@ public class GameManager extends JFrame
         setVisible(true);
     }
     
-    public void InitializeMainGame(Scenario scenario) //Switches to main game with a scenario
+    public void InitializeMainGame(Scenario scenario) //Initialisiert alle Spielnotwendigen Variablen und initialisiert Spiel
     {
         frame.getContentPane().removeAll(); 
 
@@ -83,7 +83,7 @@ public class GameManager extends JFrame
         frame.repaint();  
     }
 
-    public void UseAsset(Asset assetToUse) 
+    public void UseAsset(Asset assetToUse) //Drück-Funktion, die vom Deploy Button auf dem Asset-Panel aufgerufen wird
     {
 	    if (assetToUse.amount <= 0) {
 	        JOptionPane.showMessageDialog(null, "No more uses left for " + assetToUse.name);
@@ -106,7 +106,7 @@ public class GameManager extends JFrame
         }
     }
     
-    private void sonarAction(Sonar sonar)
+    private void sonarAction(Sonar sonar) //Funktionsweise des Sonars
     {
     	Random random = new Random();
         int fixed_x = selectedX;
@@ -229,7 +229,7 @@ public class GameManager extends JFrame
         sonarThread.start();
     }
 
-    private void vehicleAction(Vehicle vehicle)
+    private void vehicleAction(Vehicle vehicle) //Funktionsweise eines Fahrzeugs
     {
 
         int[] currentPosition = { vehicle.affectedByX ? selectedX : 0, 
@@ -302,7 +302,7 @@ public class GameManager extends JFrame
         moveThread.start();
     }
   
-    private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int y)
+    private void performVehicleMove(JLabel vehicleLabel, Vehicle vehicle, int x, int y) //Bewegung eines Fahrzeugs
     {
 	    if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size) 
 	    {
@@ -353,7 +353,7 @@ public class GameManager extends JFrame
 	    }
     }
 
-    public void placePeople(Scenario scenario) 
+    public void placePeople(Scenario scenario) //Platziert anhand der Szenarioparameter zufällig Personen 
     {
         Random rand = new Random();
         int[] clusters = new int[scenario.clusters];
@@ -379,7 +379,7 @@ public class GameManager extends JFrame
         }
     }
   
-    public void selectButton(int x, int y)
+    public void selectButton(int x, int y) //Drück-Funktion, die auf jedem Spielfeld ist
     {
     	resetGridColors();
     	if(selectedX == x && selectedY == y)
@@ -396,7 +396,7 @@ public class GameManager extends JFrame
     	}
     }
     
-    public void previewAssetRange(Asset asset)
+    public void previewAssetRange(Asset asset) //Markiert den Bereich, der bei Nutzung des gegebenen Assets durchgegangen werden würde
     {
     	if(selectedX == -1 || selectedY == -1)
     		return;
@@ -457,7 +457,7 @@ public class GameManager extends JFrame
     	}
     }
     
-    private void resetGridColors() 
+    private void resetGridColors() //Setzt alle Felder auf ihre richtige Farbe zurück
     {
     	for(int x = 0; x < changedFields.length; x++)
     	{
@@ -469,7 +469,7 @@ public class GameManager extends JFrame
     	}
     }   
     
-    private void updateFieldColor(int x, int y)
+    private void updateFieldColor(int x, int y) //Färbt Feld anhand dessen Zustands
     {
     	if(foundFields[x][y] && !rescuedFields[x][y])
 		{
@@ -497,7 +497,7 @@ public class GameManager extends JFrame
 		}
     }
     
-    private void changeFieldColor(int x, int y, Color color) //Paints field to given color and marks it as changed
+    private void changeFieldColor(int x, int y, Color color) //Färbt feld mit gegebener Farbe
     {
 	        buttons[x][y].setBackground(color);
 	        changedFields[x][y] = true;

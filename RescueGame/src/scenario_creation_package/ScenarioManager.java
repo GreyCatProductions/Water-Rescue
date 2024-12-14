@@ -7,6 +7,7 @@ import icons.IconManager;
 
 public class ScenarioManager 
 {
+	//Erstellung von Szenarien geschieht hier. Neues Szenario erstellen durch einfügen eines "Scenario" Objektes in die Liste.
     	public static LinkedList<Scenario> scenarios = new LinkedList<Scenario>
     	(Arrays.asList(
     			new Scenario("Lake",
