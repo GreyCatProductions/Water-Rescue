@@ -62,7 +62,7 @@ public class LostPeopleManager
 
             if (survivorsSaved == GameManager.chosenScenario.survivors) 
             {
-                UiManager.instance.endGame(survivorsSaved);
+                UiManager.instance.createEndGameDialog(survivorsSaved);
             }
     	}
     }

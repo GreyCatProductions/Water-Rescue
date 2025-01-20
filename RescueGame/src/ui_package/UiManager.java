@@ -40,7 +40,7 @@ public class UiManager extends UiObjectFactory
     	instance = this;
     }
     
-    public void createMainMenu() //Baut Hauptmenü
+    public void createMainMenu()
     {
         GameManager.frame.getContentPane().removeAll(); 
 
@@ -98,12 +98,13 @@ public class UiManager extends UiObjectFactory
         GameManager.frame.repaint();   
     }
     
-    private boolean IsValidName(String name)
+    private boolean IsValidName(String name) 
     {
-    	return chosenUserName.length() >= 3 && chosenUserName.length() <= 20 && chosenUserName.matches("[a-zA-Z]+");
+        return name.length() >= 3 && name.length() <= 20 && name.matches("[a-zA-Z ]+");
     }
 
-	public void createLevelSelection() //Baut Level-Auswahlmenü
+
+	public void createLevelSelection()
 	{
 	    GameManager.frame.getContentPane().removeAll();
 	
@@ -140,11 +141,13 @@ public class UiManager extends UiObjectFactory
 	
 	    JButton startScenarioButton = createStartScenarioButton();
 	
+	    ScenarioManager.CreateScenarios();
+	    
 	    int[] highscores = SaveLoadManager.getStats(chosenUserName);
 	    
-	    for(int i = 0; i < ScenarioManager.scenarios.size(); i++) 
+	    for(int i = 0; i < ScenarioManager.getAmountOfScenarios(); i++) 
 	    {
-	    	Scenario scenario = ScenarioManager.scenarios.get(i);
+	    	Scenario scenario = ScenarioManager.getScenario(i);
 	    	final int current_counter = i;
 	        JButton scenarioButton = new JButton(scenario.name);
 	        scenarioButton.addActionListener(e -> {
@@ -190,7 +193,7 @@ public class UiManager extends UiObjectFactory
 	    GameManager.frame.repaint();
 	}
    
-    public void createGameCanvas(Scenario scenario) //Konstruiert Spiel-Menü
+    public void createGameCanvas(Scenario scenario)
     {
         int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
         JPanel eastPanel = createEastPanel(eastPanelWidth);
@@ -206,31 +209,17 @@ public class UiManager extends UiObjectFactory
         GameManager.frame.add(mainGamePanel, BorderLayout.CENTER);
         GameManager.frame.add(eastPanel, BorderLayout.EAST);
     }
-	
-    public void createIcon(JLabel icon) //Erstellt gegebenes Icon
-    {
-        iconPanel.add(icon);
-        iconPanel.revalidate();
-        iconPanel.repaint();
-    }
-    
-    public void removeIcon(JLabel icon) //Entfernt gegebenes Icon
-    {
-        iconPanel.remove(icon);
-        iconPanel.revalidate();
-        iconPanel.repaint();
-    }
-    
-    public void setVisualCoordinates(int x, int y) //aktuallisiert Koordinatenfelder
+
+    public void setVisualCoordinates(int x, int y)
     {
     	xCorVisual.setText(Integer.toString(x));
     	yCorVisual.setText(Integer.toString(y));
     }
     
-    public void endGame(int survivorsSaved) //Beendet das Spiel
+    public void createEndGameDialog(int survivorsSaved) 
     {
     	int[] stats = SaveLoadManager.getStats(chosenUserName);
-    	stats[ScenarioManager.scenarios.indexOf(GameManager.chosenScenario)] = survivorsSaved;
+    	stats[ScenarioManager.getIndexOfScenario(GameManager.chosenScenario)] = survivorsSaved;
     	SaveLoadManager.saveStats(chosenUserName, stats);
     	
     	String title;
@@ -273,7 +262,7 @@ public class UiManager extends UiObjectFactory
         dialog.setVisible(true); 
     }
     
-    public void drawAssets(JPanel panelToDrawOn, Asset[] assets) //Erstellt alle Assets auf dem gegebenen panel
+    public void drawAssets(JPanel panelToDrawOn, Asset[] assets)
     {
         for (Asset asset : assets) 
         {

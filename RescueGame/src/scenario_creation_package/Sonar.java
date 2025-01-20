@@ -12,7 +12,8 @@ import javax.swing.JLabel;
 
 import main.GameManager;
 import main.LostPeopleManager;
-import ui_package.UiManager;
+import ui_package.GameColors;
+import ui_package.IconManager;
 
 public class Sonar extends Asset {
 	public int radius;
@@ -25,16 +26,14 @@ public class Sonar extends Asset {
         this.maxNoise = maxNoise;
     }
     
-    @Override
-    public void use()
+    public void action()
     {
-    	reduceAmountByOne();
     	Random random = new Random();
         int fixed_x = GameManager.instance.selectedX;
         int fixed_y = GameManager.instance.selectedY;
         int scenarioSize = GameManager.chosenScenario.size;
         int[][] distanceMatrix = new int[scenarioSize][scenarioSize];
-        JButton[][] gameFields = GameManager.instance.buttons;
+        JButton[][] gameFields = GameManager.instance.gameFields;
         
         for (int i = 0; i < scenarioSize; i++) 
         {
@@ -48,7 +47,7 @@ public class Sonar extends Asset {
 	    int y_pos = buttonPosition.y + (gameFields[fixed_x][fixed_y].getHeight() - solarIcon.getPreferredSize().height) / 2;
 	    solarIcon.setBounds(x_pos, y_pos, solarIcon.getPreferredSize().width, solarIcon.getPreferredSize().height);
 	    
-        UiManager.instance.createIcon(solarIcon);
+	    IconManager.INSTANCE.createIcon(solarIcon);
         
         Thread sonarThread = new Thread(() -> 
         {
@@ -149,5 +148,32 @@ public class Sonar extends Asset {
             } 
     	});
         sonarThread.start();
+    }
+    
+    public void preview()
+    {
+    	int selectedX = GameManager.instance.selectedX;
+    	int selectedY = GameManager.instance.selectedY;
+    	int scenarioSize = GameManager.chosenScenario.size;
+    	
+        for (int dx = -radius; dx <= radius; dx++) 
+        {
+            for (int dy = -radius; dy <= radius; dy++) 
+            {
+                int x = selectedX + dx;
+                int y = selectedY + dy;
+
+                if (x >= 0 && x < scenarioSize && y >= 0 && y < scenarioSize &&
+                    Math.abs(dx) + Math.abs(dy) <= radius) 
+                {                 
+                	GameManager.instance.changeFieldColor(x, y, GameColors.selectedColor);
+                }
+            }
+        }
+    }
+    
+    public Sonar deepCopy()
+    {
+    	return new Sonar(name, amount, radius, maxNoise, description, icon);
     }
 }

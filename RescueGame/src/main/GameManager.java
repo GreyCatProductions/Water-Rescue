@@ -2,11 +2,7 @@ package main;
 import javax.swing.*;
 
 import icons.IconManager;
-import scenario_creation_package.Asset;
-import scenario_creation_package.CoordinateStep;
 import scenario_creation_package.Scenario;
-import scenario_creation_package.Sonar;
-import scenario_creation_package.Vehicle;
 import ui_package.GameColors;
 import ui_package.UiManager;
 
@@ -19,7 +15,7 @@ public class GameManager extends JFrame
 	public static JFrame frame;
 	public static Scenario chosenScenario;
     
-    public JButton[][] buttons;
+    public JButton[][] gameFields;
     public Boolean[][] changedFields;
     public int usesLeft;
     public Boolean[][] searchedFields; 
@@ -50,7 +46,7 @@ public class GameManager extends JFrame
         setVisible(true);
     }
     
-    public void initializeMainGame(Scenario scenario) //Initialisiert alle Spielnotwendigen Variablen, startet dann Spiel
+    public void initializeMainGame(Scenario scenario) //Wird vom StartGame Knopf im Startmenü aufgerufen
     {
         frame.getContentPane().removeAll(); 
         
@@ -64,7 +60,7 @@ public class GameManager extends JFrame
     
     private void initializeMainGameVariables(int size)
     {
-        buttons = new JButton[size][size];
+        gameFields = new JButton[size][size];
         LostPeopleManager.INSTANCE.initializeVariables(size);
         foundFields = new Boolean[size][size];
         changedFields = new Boolean[size][size];
@@ -102,68 +98,7 @@ public class GameManager extends JFrame
     	}
     }
     
-    public void previewAssetRange(Asset asset) //Markiert den Bereich, der bei Nutzung des gegebenen Assets durchgegangen werden würde
-    {
-    	if(selectedX == -1 || selectedY == -1)
-    		return;
-    	
-    	resetGridColors();
-
-    	if(asset instanceof Vehicle)
-    	{
-    		Vehicle vehicle = (Vehicle) asset;
-    		
-			int curX = vehicle.affectedByX ? selectedX : 0;
-			int curY = vehicle.affectedByY ? selectedY : 0;
-
-			for(CoordinateStep step : vehicle.movePattern)
-			{
-				int xToMove = step.x;
-				int yToMove = step.y;
-				
-				if(!step.noUse)
-				{
-			        int startX = Math.min(curX, curX + xToMove);
-			        int endX = Math.max(curX, curX + xToMove);
-			        int startY = Math.min(curY, curY + yToMove);
-			        int endY = Math.max(curY, curY + yToMove);
-			        
-			        for (int x = startX; x < endX; x++) 
-			        {
-			            for (int y = startY; y < endY; y++) 
-			            {
-			                if (x < 0 || x >= chosenScenario.size || y < 0 || y >= chosenScenario.size)
-			                    continue;	
-			    			if(x < chosenScenario.size && y < chosenScenario.size)
-			    			{
-			        			changeFieldColor(x, y, GameColors.selectedColor);
-			    			}
-						}
-					}
-				}
-				curX += xToMove;
-				curY += yToMove;
-	    	}
-    	}
-    	else
-    	{
-    		Sonar sonar = (Sonar) asset;
-            for (int dx = -sonar.radius; dx <= sonar.radius; dx++) {
-                for (int dy = -sonar.radius; dy <= sonar.radius; dy++) {
-                    int x = selectedX + dx;
-                    int y = selectedY + dy;
-
-                    if (x >= 0 && x < chosenScenario.size && y >= 0 && y < chosenScenario.size &&
-                        Math.abs(dx) + Math.abs(dy) <= sonar.radius) 
-                    {                 
-                    	changeFieldColor(x, y, GameColors.selectedColor);
-                    }
-                }
-            }
-    	}
-    }
-    
-    private void resetGridColors() //Setzt alle Felder auf ihre richtige Farbe zurück
+    public void resetGridColors() //Setzt alle Felder auf ihre richtige Farbe zurück
     {
     	for(int x = 0; x < changedFields.length; x++)
     	{
@@ -203,9 +138,9 @@ public class GameManager extends JFrame
 		}
     }
     
-    public void changeFieldColor(int x, int y, Color color) //Färbt feld mit gegebener Farbe
+    public void changeFieldColor(int x, int y, Color color)
     {
-	        buttons[x][y].setBackground(color);
+	        gameFields[x][y].setBackground(color);
 	        changedFields[x][y] = true;
     }
        

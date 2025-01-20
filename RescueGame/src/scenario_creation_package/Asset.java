@@ -13,7 +13,7 @@ public abstract class Asset
     protected int amount;
     protected JTextArea myTextArea;
     protected ImageIcon icon;
-    private String description;
+    protected String description;
 
     public Asset(String name, int amount, String description, ImageIcon icon) 
     {
@@ -40,17 +40,9 @@ public abstract class Asset
     
     protected void reduceAmountByOne()
     {	
-    	checkAmount();
 	    GameManager.instance.usesLeft--;
 	    amount--;
 	    updateTextAreaText();
-    }
-    
-    private void checkAmount()
-    {
-	    if (amount <= 0) {
-	        JOptionPane.showMessageDialog(null, "No more uses left for " + name);
-	    }
     }
     
     public void assignTextAreaReference(JTextArea area)
@@ -78,15 +70,35 @@ public abstract class Asset
     
     public void use()
     {
+    	if(GameManager.instance.selectedX == -1 || GameManager.instance.selectedY == -1)
+    	{
+    		JOptionPane.showMessageDialog(null, "Select a field before sending your asset somewhere");
+    		return;
+    	}
+    	
+    	if(amount <= 0)
+    	{
+	        JOptionPane.showMessageDialog(null, "No more uses left for " + name);
+	        return;
+    	}
+    	
+    	reduceAmountByOne();
+    	
         if(this instanceof Sonar)
         {
         	Sonar sonar = (Sonar)this;
-        	sonar.use();
+        	sonar.action();
         }
         else if(this instanceof Vehicle)
         {
         	Vehicle vehicle = (Vehicle)this;
-            vehicle.use();
+            vehicle.action();
         }
     }
+
+    public abstract Asset deepCopy();
+    
+    public abstract void action();
+    
+    public abstract void preview();
 }

@@ -19,10 +19,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import icons.IconManager;
 import main.GameManager;
@@ -195,6 +197,7 @@ public abstract class UiObjectFactory
 	    return startScenarioButton;
 	}
 
+	//Main game Objects
 	protected JPanel createBottomContainer()
 	{
 	    JPanel bottomContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -204,7 +207,7 @@ public abstract class UiObjectFactory
 	}
 
 	//Main Game Objects
-    protected JPanel createEastPanel(int width) //erstellt Panel für die östliche Seite
+    protected JPanel createEastPanel(int width)
     {
         JPanel eastPanel = new JPanel();
         eastPanel.setLayout(new BorderLayout());
@@ -214,7 +217,7 @@ public abstract class UiObjectFactory
         return eastPanel;
     }
     
-    protected JPanel createAssetPanel() //Erstellt Asset panel
+    protected JPanel createAssetPanel()
     {
         JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
@@ -222,7 +225,7 @@ public abstract class UiObjectFactory
         return assetPanel;
     }
     
-    protected JPanel createCoordinatesPanel() //Erstellt Koordinatenfelder
+    protected JPanel createCoordinatesPanel()
     {
     	JPanel coordinatesPanel = new JPanel();
     	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
@@ -266,7 +269,7 @@ public abstract class UiObjectFactory
     	return coordinatesPanel;
     }
     
-    protected JPanel createMainGamePanel(int size) //Erstellt Spielfeld
+    protected JPanel createMainGamePanel(int size)
     {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         mainGamePanel.setBackground(Color.DARK_GRAY);
@@ -301,7 +304,7 @@ public abstract class UiObjectFactory
                 gameField.setToolTipText("AREA: (" + r + ", " + c+ ")");
                 
                 grid.add(gameField);
-                GameManager.instance.buttons[column][row] = gameField;
+                GameManager.instance.gameFields[column][row] = gameField;
 
                 gameField.addActionListener(new ActionListener() 
                 {
@@ -333,6 +336,7 @@ public abstract class UiObjectFactory
         JPanel assetWindow = new JPanel();
         assetWindow.setBackground(Color.gray);
         assetWindow.setLayout(new BorderLayout());
+
         JTextArea statsTextArea = new JTextArea();
         asset.assignTextAreaReference(statsTextArea);
         asset.updateTextAreaText();
@@ -341,21 +345,36 @@ public abstract class UiObjectFactory
         statsTextArea.setWrapStyleWord(true);
         statsTextArea.setOpaque(false);
         statsTextArea.setEditable(false);
-        statsTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        assetWindow.add(statsTextArea, BorderLayout.WEST);
-        
+
+        JScrollPane statsScrollPane = new JScrollPane(statsTextArea);
+        statsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        statsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+        statsScrollPane.setOpaque(true);
+        statsScrollPane.setBackground(Color.gray); 
+        statsScrollPane.getViewport().setBackground(Color.gray);
+        statsScrollPane.setBorder(new LineBorder(Color.darkGray, 1));
+
+        assetWindow.add(statsScrollPane, BorderLayout.WEST);
+
         JTextArea descriptionTextArea = new JTextArea(asset.getDescription());
         descriptionTextArea.setLineWrap(true);
         descriptionTextArea.setWrapStyleWord(true);
         descriptionTextArea.setOpaque(false);
         descriptionTextArea.setEditable(false);
-        descriptionTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        assetWindow.add(descriptionTextArea, BorderLayout.EAST);
+
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
+        descriptionScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        descriptionScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+        descriptionScrollPane.setOpaque(true);
+        descriptionScrollPane.getViewport().setBackground(Color.gray);
+        descriptionScrollPane.setBorder(new LineBorder(Color.darkGray, 1));
+        assetWindow.add(descriptionScrollPane, BorderLayout.EAST);
+
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonsPanel.setBackground(Color.gray);
-        
+
         JButton selectButton = new JButton("PREVIEW");
         selectButton.setMaximumSize(standardButtonSize);
         selectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -365,26 +384,26 @@ public abstract class UiObjectFactory
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                GameManager.instance.previewAssetRange(asset);
+                asset.preview();
             }
         });
-        
+
         JButton deployButton = new JButton("DEPLOY");
         deployButton.setMaximumSize(standardButtonSize);
         deployButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         deployButton.addActionListener(new ActionListener()
         {
-        	@Override
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		asset.use();
-        	}
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                asset.use();
+            }
         });
-        
+
         buttonsPanel.add(selectButton);
         buttonsPanel.add(deployButton);
-        
+
         assetWindow.add(buttonsPanel, BorderLayout.SOUTH);
 
         int extraWidth = 100; 
@@ -394,7 +413,8 @@ public abstract class UiObjectFactory
         assetWindow.setMaximumSize(new Dimension(width, height));
         assetWindow.setPreferredSize(new Dimension(width, height));
         assetWindow.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-        
+
         return assetWindow;
     }
+
 }
