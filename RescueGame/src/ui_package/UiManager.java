@@ -51,7 +51,7 @@ public class UiManager extends UiObjectFactory
         JLabel enterNameInstruction = createEnterNameInstruction();
         
         JPanel objectContainer = createObjectContainer();
-        
+         
         JTextField enterNameField = createEnterNameField();
         
         JButton startGameButton = createStartGameButton();
@@ -61,14 +61,14 @@ public class UiManager extends UiObjectFactory
             public void actionPerformed(ActionEvent e) 
             {
             	chosenUserName = enterNameField.getText(); 
-                if (IsValidName(chosenUserName)) 
+                if (NameValidator.IsValidName(chosenUserName)) 
                 {
                     JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + chosenUserName);
 	                createLevelSelection();
                 }
                 else
                 {
-                	JOptionPane.showMessageDialog(GameManager.frame, "Name must be 3-20 characters and contain only letters.");
+                	JOptionPane.showMessageDialog(GameManager.frame, "Enter a normal name. \n-3-20 characters\n-contain no numbers\n-no leading/ending spaces.");
                 	enterNameField.setText("");
                 }
             }
@@ -97,12 +97,6 @@ public class UiManager extends UiObjectFactory
         GameManager.frame.revalidate(); 
         GameManager.frame.repaint();   
     }
-    
-    private boolean IsValidName(String name) 
-    {
-        return name.length() >= 3 && name.length() <= 20 && name.matches("[a-zA-Z ]+");
-    }
-
 
 	public void createLevelSelection()
 	{
@@ -141,7 +135,7 @@ public class UiManager extends UiObjectFactory
 	
 	    JButton startScenarioButton = createStartScenarioButton();
 	
-	    ScenarioManager.CreateScenarios();
+	    ScenarioManager.createScenarios();
 	    
 	    int[] highscores = SaveLoadManager.getStats(chosenUserName);
 	    

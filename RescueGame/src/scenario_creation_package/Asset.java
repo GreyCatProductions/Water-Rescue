@@ -68,17 +68,17 @@ public abstract class Asset
 	    UiManager.instance.assetPanel.repaint();
     }
     
-    public void use()
+    public void tryToUse()
     {
     	if(GameManager.instance.selectedX == -1 || GameManager.instance.selectedY == -1)
     	{
-    		JOptionPane.showMessageDialog(null, "Select a field before sending your asset somewhere");
+    		JOptionPane.showMessageDialog(GameManager.frame, "Select a field before sending your asset somewhere!");
     		return;
     	}
     	
     	if(amount <= 0)
     	{
-	        JOptionPane.showMessageDialog(null, "No more uses left for " + name);
+	        JOptionPane.showMessageDialog(GameManager.frame, "No more uses left for " + name);
 	        return;
     	}
     	
@@ -95,10 +95,30 @@ public abstract class Asset
             vehicle.action();
         }
     }
+    
+    public void tryToPreview()
+    {
+    	if(GameManager.instance.selectedX == -1 || GameManager.instance.selectedY == -1)
+    	{
+    		JOptionPane.showMessageDialog(null, "Select a field before trying to preview!");
+    		return;
+    	}
+    	
+        if(this instanceof Sonar)
+        {
+        	Sonar sonar = (Sonar)this;
+        	sonar.showPreview();
+        }
+        else if(this instanceof Vehicle)
+        {
+        	Vehicle vehicle = (Vehicle)this;
+            vehicle.showPreview();
+        }
+    }
 
     public abstract Asset deepCopy();
     
-    public abstract void action();
+    protected abstract void action();
     
-    public abstract void preview();
+    protected abstract void showPreview();
 }

@@ -32,7 +32,7 @@ public class Vehicle extends Asset
         this.speed = speed;
     }
     
-    public void action() 
+    protected void action() 
     {
         int[] currentPosition = { affectedByX ? GameManager.instance.selectedX : 0, 
                                   affectedByY ? GameManager.instance.selectedY : 0 };
@@ -101,8 +101,7 @@ public class Vehicle extends Asset
         moveThread.start();
     }
 
-    
-    public void preview() //Markiert den Bereich, der bei Nutzung des gegebenen Assets durchgegangen würde
+    protected void showPreview() //Markiert den Bereich, der bei Nutzung des gegebenen Assets durchgegangen würde
     {
     	int selectedX = GameManager.instance.selectedX;
     	int selectedY = GameManager.instance.selectedY;

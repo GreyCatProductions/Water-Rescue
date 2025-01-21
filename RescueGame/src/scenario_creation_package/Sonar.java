@@ -160,7 +160,7 @@ public class Sonar extends Asset {
 	    IconManager.INSTANCE.createIcon(solarIcon);
     }
     
-    public void preview()
+    public void showPreview()
     {
     	int selectedX = GameManager.instance.selectedX;
     	int selectedY = GameManager.instance.selectedY;

@@ -81,7 +81,7 @@ public class GameManager extends JFrame
         usesLeft = 0;
     }
 
-    public void selectButton(int x, int y) //Drück-Funktion, die auf jedem Spielfeld ist
+    public void selectField(int x, int y) //Drück-Funktion, die auf jedem Spielfeld ist
     {
     	resetGridColors();
     	if(selectedX == x && selectedY == y)

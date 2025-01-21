@@ -311,7 +311,7 @@ public abstract class UiObjectFactory
                     @Override
                     public void actionPerformed(ActionEvent e) 
                     {
-                        GameManager.instance.selectButton(c, r);
+                        GameManager.instance.selectField(c, r);
                     }
                 });
             }
@@ -384,7 +384,7 @@ public abstract class UiObjectFactory
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                asset.preview();
+                asset.tryToPreview();
             }
         });
 
@@ -397,7 +397,7 @@ public abstract class UiObjectFactory
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                asset.use();
+                asset.tryToUse();
             }
         });
 

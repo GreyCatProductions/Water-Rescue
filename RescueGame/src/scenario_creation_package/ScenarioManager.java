@@ -4,23 +4,22 @@ import icons.IconManager;
 
 public class ScenarioManager 
 {
-	//Erstellung von Szenarien geschieht hier. Neues Szenario erstellen durch einfügen eines "Scenario" Objektes in die Liste.
 	private static LinkedList<Scenario> scenarios;
 
-	public static void CreateScenarios()
+	public static void createScenarios()
 	{
 		scenarios = new LinkedList<Scenario>();
 		
-		scenarios.add(CreateLakeScenario());
+		scenarios.add(createLakeScenario());
 
-		scenarios.add(CreateBayScenario());
+		scenarios.add(createBayScenario());
 		
-		scenarios.add(CreateSeaScenario());
+		scenarios.add(createSeaScenario());
 		
-		scenarios.add(CreateOceanScenario());
+		scenarios.add(createOceanScenario());
 	}
 	
-	private static Scenario CreateLakeScenario()
+	private static Scenario createLakeScenario()
 	{
 		int amountOfPeople = 33;
 		int clusters = 4;
@@ -40,7 +39,7 @@ public class ScenarioManager
 		return lake;
 	}
 	
-	private static Scenario CreateBayScenario()
+	private static Scenario createBayScenario()
 	{
 		int amountOfPeople = 42;
 		int clusters = 5;
@@ -58,7 +57,7 @@ public class ScenarioManager
 		return bay;
 	}
 	
-	private static Scenario CreateSeaScenario()
+	private static Scenario createSeaScenario()
 	{
 		int amountOfPeople = 97;
 		int clusters = 6;
@@ -76,7 +75,7 @@ public class ScenarioManager
 		return sea;
 	}
 	
-	private static Scenario CreateOceanScenario()
+	private static Scenario createOceanScenario()
 	{
 		int amountOfPeople = 238;
 		int clusters = 10;
