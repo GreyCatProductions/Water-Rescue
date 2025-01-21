@@ -51,7 +51,7 @@ public class LostPeopleManager
     	return survivors[x][y] > 0;
     }
     
-    public void rescuePeople(int x, int y)
+    public synchronized void rescuePeople(int x, int y)
     {
     	if(survivorsPresent(x, y))
     	{

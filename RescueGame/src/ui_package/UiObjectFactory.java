@@ -219,7 +219,7 @@ public abstract class UiObjectFactory
     
     protected JPanel createAssetPanel()
     {
-        JPanel assetPanel = new JPanel();
+    	JPanel assetPanel = new JPanel();
         assetPanel.setLayout(new BoxLayout(assetPanel, BoxLayout.Y_AXIS));
         assetPanel.setBackground(Color.darkGray);
         return assetPanel;

@@ -15,25 +15,30 @@ public class Vehicle extends Asset
     public Boolean canRescue;
     public Boolean affectedByX; 
     public Boolean affectedByY; 
+    public int speed; //Sollte für den Normalfall zwischen 1 und 10 sein
 
-    public Vehicle(String name, int amount, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
+    public Vehicle(String name, int amount, int speed, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
     {
-        this(name, amount, movePattern, canRescue, description, icon, true, true);
+        this(name, amount, speed, movePattern, canRescue, description, icon, true, true);
     }
 
-    public Vehicle(String name, int amount, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon, Boolean affectedByX, Boolean affectedByY) 
+    public Vehicle(String name, int amount, int speed, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon, Boolean affectedByX, Boolean affectedByY) 
     {
         super(name, amount, description, icon);
         this.affectedByX = affectedByX;
         this.affectedByY = affectedByY;
         this.movePattern = movePattern;
         this.canRescue = canRescue;
+        this.speed = speed;
     }
     
-    public void action() {
+    public void action() 
+    {
         int[] currentPosition = { affectedByX ? GameManager.instance.selectedX : 0, 
                                   affectedByY ? GameManager.instance.selectedY : 0 };
 
+        int timeToWait = (int)(100 / speed * 30);
+        
         JLabel vehicleLabel = new JLabel();
         vehicleLabel.setIcon(icon);
 
@@ -49,47 +54,35 @@ public class Vehicle extends Asset
                     int xToMove = step.x;
                     int yToMove = step.y;
 
-                        int startX = Math.min(currentPosition[0], currentPosition[0] + xToMove);
-                        int endX = Math.max(currentPosition[0], currentPosition[0] + xToMove);
-                        int startY = Math.min(currentPosition[1], currentPosition[1] + yToMove);
-                        int endY = Math.max(currentPosition[1], currentPosition[1] + yToMove);
+                    int startX = Math.min(currentPosition[0], currentPosition[0] + xToMove);
+                    int endX = Math.max(currentPosition[0], currentPosition[0] + xToMove);
+                    int startY = Math.min(currentPosition[1], currentPosition[1] + yToMove);
+                    int endY = Math.max(currentPosition[1], currentPosition[1] + yToMove);
 
-                        Boolean flip = true;
-
-                        if (xToMove != 0) 
+                    Boolean flip = false;
+                    
+                    for (int x = startX; x < endX; x++)
+                    {
+                        if (flip) 
                         {
-                            for (int x = startX; x < endX; x++)
+                            for (int y = startY; y < endY; y++) 
+                            {        	
+                            	processVehicleMove(vehicleLabel, x, y, step.noUse);
+                                Thread.sleep(timeToWait);
+                            }
+                        } else 
+                        {
+                            for (int y = endY - 1; y >= startY; y--) 
                             {
-                                if (flip) 
-                                {
-                                    flip = false;
-                                    for (int y = startY; y < endY; y++) 
-                                    {
-                                        performVehicleMove(vehicleLabel, x, y, step.noUse);
-                                        Thread.sleep(100);
-                                    }
-                                } else 
-                                {
-                                    flip = true;
-                                    for (int y = endY - 1; y >= startY; y--) 
-                                    {
-                                        performVehicleMove(vehicleLabel, x, y, step.noUse);
-                                        Thread.sleep(100);
-                                    }
-                                }
+                            	processVehicleMove(vehicleLabel, x, y, step.noUse);
+                                Thread.sleep(timeToWait);
                             }
                         }
-
-                        if (yToMove != 0) {
-                            for (int y = startY; y < endY; y++) 
-                            {
-                                performVehicleMove(vehicleLabel, currentPosition[0], y, step.noUse);
-                                Thread.sleep(100);
-                            }
+                        flip = !flip;
                     }
 
-                    currentPosition[0] += xToMove;
-                    currentPosition[1] += yToMove;
+                currentPosition[0] += xToMove;
+                currentPosition[1] += yToMove;
                 }
             } catch (InterruptedException e) 
             {
@@ -153,7 +146,7 @@ public class Vehicle extends Asset
     	}
     }
     
-    private void performVehicleMove(JLabel vehicleLabel, int x, int y, boolean ignoreEffect)
+    private void processVehicleMove(JLabel vehicleLabel, int x, int y, boolean ignoreAction)
     {
     	int scenarioSize = GameManager.chosenScenario.size;
     	
@@ -162,7 +155,12 @@ public class Vehicle extends Asset
 	        vehicleLabel.setVisible(false);
 	        return;
 	    }
-	
+        performVehicleMove(vehicleLabel, x, y);
+        if(!ignoreAction) { assetFieldAction(x, y);}
+    }
+
+    private void performVehicleMove(JLabel vehicleLabel, int x, int y)
+    {
 	    vehicleLabel.setVisible(true);
 	    	
 	    JButton[][] gameFields = GameManager.instance.gameFields;
@@ -171,39 +169,31 @@ public class Vehicle extends Asset
 	    int x_pos = buttonPosition.x + (gameFields[x][y].getWidth() - vehicleLabel.getPreferredSize().width) / 2;
 	    int y_pos = buttonPosition.y + (gameFields[x][y].getHeight() - vehicleLabel.getPreferredSize().height) / 2;
 	    vehicleLabel.setBounds(x_pos, y_pos, vehicleLabel.getPreferredSize().width, vehicleLabel.getPreferredSize().height);
-	
-	    if(!ignoreEffect)
+    }
+    
+    private void assetFieldAction(int x, int y)
+    {
+	    if (LostPeopleManager.INSTANCE.survivorsPresent(x, y))
 	    {
-		    if (LostPeopleManager.INSTANCE.survivorsPresent(x, y))
-		    {
-		        if (canRescue) 
-		        {
-		        	LostPeopleManager.INSTANCE.rescuePeople(x, y);
-		        } 
-		        else 
-		        {
-		        	GameManager.instance.foundFields[x][y] = true;
-		        }
-		    } 
-		    else 
-		    {
-		    	GameManager.instance.searchedFields[x][y] = true;
-		    }
-		    
-		    GameManager.instance.updateFieldColor(x, y);
-	    }
-	    try 
-	    {
-	        Thread.sleep(500);
+	        if (canRescue) 
+	        {
+	        	LostPeopleManager.INSTANCE.rescuePeople(x, y);
+	        } 
+	        else 
+	        {
+	        	GameManager.instance.foundFields[x][y] = true;
+	        }
 	    } 
-	    catch (InterruptedException e) 
+	    else 
 	    {
-	        e.printStackTrace();
+	    	GameManager.instance.searchedFields[x][y] = true;
 	    }
+	    
+	    GameManager.instance.updateFieldColor(x, y);
     }
     
     public Vehicle deepCopy()
     {
-    	return new Vehicle(name, amount, movePattern, canRescue, description, icon, affectedByX, affectedByY);
+    	return new Vehicle(name, amount, speed, movePattern, canRescue, description, icon, affectedByX, affectedByY);
     }
 }

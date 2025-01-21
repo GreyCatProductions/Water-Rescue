@@ -16,12 +16,12 @@ public class GameManager extends JFrame
 	public static Scenario chosenScenario;
     
     public JButton[][] gameFields;
-    public Boolean[][] changedFields;
+    public volatile Boolean[][] changedFields;
     public int usesLeft;
-    public Boolean[][] searchedFields; 
-    public Boolean[][] foundFields;
-    public Boolean[][] rescuedFields;
-    public Boolean[][] markedFields; 
+    public volatile Boolean[][] searchedFields; 
+    public volatile Boolean[][] foundFields;
+    public volatile Boolean[][] rescuedFields;
+    public volatile Boolean[][] markedFields; 
     
     public int selectedX = -1;
     public int selectedY = -1;
