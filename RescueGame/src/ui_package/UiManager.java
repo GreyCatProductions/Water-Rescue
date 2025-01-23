@@ -242,31 +242,43 @@ public class UiManager extends UiObjectFactory
     	    title = "TERRIBLE JOB";
 
     	
-        JDialog dialog = new JDialog(GameManager.frame, title, true);
-        dialog.setLayout(new BorderLayout());
+    	JDialog dialog = new JDialog(GameManager.frame, title, true);
+    	dialog.setLayout(new BorderLayout());
+    	String message = survivorsSaved + " people saved!\n\n"
+    	        + (GameManager.chosenScenario.survivors - survivorsSaved) + " people lost to the sea.\n\n"
+    	        + "Summary: " + survivorsSaved + " / " + GameManager.chosenScenario.survivors;
 
-        String message = survivorsSaved + " / " + GameManager.chosenScenario.survivors + " people saved!\n\n";
-        JLabel messageLabel = new JLabel("<html>" + message + "</html>", SwingConstants.CENTER);
-        dialog.add(messageLabel, BorderLayout.CENTER);
+    	JLabel messageLabel = new JLabel("<html><div style='text-align: center;'>" + message + "</div></html>", SwingConstants.CENTER);
 
-        JPanel buttonPanel = new JPanel();
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createLevelSelection();
-                dialog.dispose();
-            }
-        });
-        buttonPanel.add(okButton);
-        
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        dialog.setSize(new Dimension(300, 200));
-        dialog.setLocationRelativeTo(GameManager.frame); 
-        dialog.setVisible(true); 
+    	JPanel messagePanel = new JPanel();
+    	messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+    	messagePanel.add(Box.createVerticalGlue());
+    	messagePanel.add(messageLabel);
+    	messagePanel.add(Box.createVerticalGlue());
+
+    	dialog.add(messagePanel, BorderLayout.CENTER);
+
+    	JPanel buttonPanel = new JPanel();
+    	JButton okButton = new JButton("OK");
+    	okButton.addActionListener(new ActionListener() 
+    	{
+    	    @Override
+    	    public void actionPerformed(ActionEvent e) 
+    	    {
+    	        createLevelSelection();
+    	        dialog.dispose();
+    	    }
+    	});
+    	buttonPanel.add(okButton);
+
+    	dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+    	dialog.setSize(new Dimension(300, 200));
+    	dialog.setLocationRelativeTo(GameManager.frame); 
+    	dialog.setVisible(true);
     }
-    
+
     public void drawAssets(JPanel panelToDrawOn, Asset[] assets)
     {
         for (Asset asset : assets) 

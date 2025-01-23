@@ -116,7 +116,7 @@ public abstract class UiObjectFactory
         logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
         logoContainer.setOpaque(false);
         
-        ImageIcon logoIcon = IconManager.main_menu_image;
+        ImageIcon logoIcon = IconManager.mainGameLogo;
         Image scaledImage = logoIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(scaledImage);
        
@@ -230,9 +230,11 @@ public abstract class UiObjectFactory
     protected JPanel createCoordinatesPanel()
     {
     	JPanel coordinatesPanel = new JPanel();
-    	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
+    	coordinatesPanel.setLayout(new BorderLayout());
     	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getMaximumSize().width, 100));
     	JLabel topText = new JLabel("SELECTED COORDINATES");
+        topText.setFont(new Font("Arial", Font.BOLD, 16)); 
+
     	JPanel coordinatesHolder = new JPanel();
     	coordinatesHolder.setLayout(new FlowLayout(FlowLayout.CENTER));
     	Font font = new Font("Arial", Font.BOLD, 14);
@@ -265,8 +267,8 @@ public abstract class UiObjectFactory
     	
     	coordinatesHolder.add(xCorVisual);
     	coordinatesHolder.add(yCorVisual);
-    	coordinatesPanel.add(topText);
-    	coordinatesPanel.add(coordinatesHolder);
+    	coordinatesPanel.add(topText, BorderLayout.NORTH);
+    	coordinatesPanel.add(coordinatesHolder, BorderLayout.CENTER);
     	coordinatesPanel.setBorder(border);
     	
     	return coordinatesPanel;
@@ -410,6 +412,25 @@ public abstract class UiObjectFactory
         JPanel bottomPanel = new JPanel(new GridLayout(1, size)); 
         bottomPanel.setBackground(Color.DARK_GRAY);
         
+        createFields(grid, size);
+        
+        iconPanel = new JPanel(null); 
+        iconPanel.setOpaque(false); 
+        iconPanel.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height);
+
+        layeredPane.add(grid, Integer.valueOf(0));
+        layeredPane.add(iconPanel, Integer.valueOf(1)); 
+
+        centerPanel.add(layeredPane, BorderLayout.CENTER);
+        centerPanel.add(leftPanel, BorderLayout.WEST); 
+        centerPanel.add(bottomPanel, BorderLayout.SOUTH);
+        mainGamePanel.add(centerPanel);
+
+        return mainGamePanel;
+    }
+    
+    public void createFields(JPanel grid, int size) //Public for testing
+    {
         for (int row = 0; row < size; row++) 
         {
             for (int column = 0; column < size; column++) 
@@ -434,19 +455,6 @@ public abstract class UiObjectFactory
                 });
             }
         }
-        iconPanel = new JPanel(null); 
-        iconPanel.setOpaque(false); 
-        iconPanel.setBounds(0, 0, layeredPane.getPreferredSize().width, layeredPane.getPreferredSize().height);
-
-        layeredPane.add(grid, Integer.valueOf(0));
-        layeredPane.add(iconPanel, Integer.valueOf(1)); 
-
-        centerPanel.add(layeredPane, BorderLayout.CENTER);
-        centerPanel.add(leftPanel, BorderLayout.WEST); 
-        centerPanel.add(bottomPanel, BorderLayout.SOUTH);
-        mainGamePanel.add(centerPanel);
-
-        return mainGamePanel;
     }
 
     protected JPanel createAssetWindow(Asset asset)

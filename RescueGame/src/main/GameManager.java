@@ -30,20 +30,23 @@ public class GameManager extends JFrame
     
     public static GameManager instance;
     
-    private GameManager() //Konstruiert das JFrame und ruft Hauptmenü Erstellung auf
+    public GameManager(boolean testing) //Konstruiert das JFrame und ruft Hauptmenü Erstellung auf, public for testing
     {
     	instance = this;
-    	frame = this;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Water Rescue Operator");
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        frame.setUndecorated(true);
-        frame.getContentPane().setBackground(Color.black);
-        frame.setLayout(new BorderLayout());;
-        frame.setIconImage(IconManager.main_menu_image.getImage());
-    
-        UiManager.instance.createMainMenu();
-        setVisible(true);
+    	if(!testing)
+    	{
+	    	frame = this;
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        setTitle("Water Rescue Operator");
+	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+	        frame.setUndecorated(true);
+	        frame.getContentPane().setBackground(Color.black);
+	        frame.setLayout(new BorderLayout());;
+	        frame.setIconImage(IconManager.mainGameLogo.getImage());
+	    
+	        UiManager.instance.createMainMenu();
+	        setVisible(true);
+    	}
     }
     
     public void initializeMainGame(Scenario scenario) //Wird vom StartGame Knopf im Startmenü aufgerufen
@@ -58,7 +61,7 @@ public class GameManager extends JFrame
         frame.repaint();  
     }
     
-    private void initializeMainGameVariables(int size)
+    public void initializeMainGameVariables(int size) //public for testing 
     {
         gameFields = new JButton[size][size];
         LostPeopleManager.INSTANCE.initializeVariables(size);
@@ -116,7 +119,7 @@ public class GameManager extends JFrame
     	{
     		changeFieldColor(x, y, GameColors.selectedColor);
     	}
-    	if(foundFields[x][y] && !rescuedFields[x][y])
+    	else if(foundFields[x][y] && !rescuedFields[x][y])
 		{
 			changeFieldColor(x, y, GameColors.foundColor);
 		}
@@ -158,6 +161,6 @@ public class GameManager extends JFrame
         UIManager.put("TextPane.font", mainFont);
         UIManager.put("MenuItem.font", mainFont);
         new UiManager();
-    	new GameManager();
+    	new GameManager(false);
     }
 }
