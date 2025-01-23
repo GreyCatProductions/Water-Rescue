@@ -38,6 +38,11 @@ public abstract class Asset
     	return amount;
     }
     
+    public ImageIcon getIcon()
+    {
+    	return icon;
+    }
+    
     protected void reduceAmountByOne()
     {	
 	    GameManager.instance.usesLeft--;

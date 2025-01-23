@@ -63,15 +63,16 @@ public class ScenarioManager
 		int clusters = 6;
 		int size = 20;
 		String description = "A wealthy pair had their weeding on a yacht. Something happened that made it sink. As far as we know 97 people managed to get on 6 inflatable rafts. A strong current spread those out in unpredictable ways. The waves are high, the weather terrible.";
-		Vehicle privateYacht = new Vehicle ("Yacht", 2, 2, new Step[] {new Step(4, 1, false), new Step(4, 1, false)}, true, "One family was coming late. They can help us with 2 ships.", IconManager.oiltanker);
-		Vehicle largeScoutPlane = new Vehicle ("Large Scoutplane", 2, 6, new Step[] {new Step(2, 20, false)}, false, "Flies in a straight line. Uses thermals to see everything below", IconManager.smallAirtanker, true, false);
+		Vehicle privateYacht = new Vehicle ("Yacht", 3, 2, new Step[] {new Step(4, 1, false), new Step(4, 1, false)}, true, "One family was coming late. They can help us with 2 ships.", IconManager.oiltanker);
+		Vehicle largeScoutPlane = new Vehicle ("Large Scoutplane", 3, 6, new Step[] {new Step(2, 20, false)}, false, "Flies in a straight line. Uses thermals to see everything below", IconManager.smallAirtanker, true, false);
 		Vehicle rescueHelicopter = new Vehicle ("Rescue Helicopter", 3, 5, new Step[] {new Step(2, 2, false)}, true, "Can land on a single place and rescue survivors there. Lacks equipment to see trough the fog.", IconManager.dinghie);
 		Vehicle rescueShip = new Vehicle ("Large Rescue Ship", 3, 3, new Step[] {new Step(5, 2, false)}, true, "Large Ship specialized on rescue operations. Rescues survivors.", IconManager.rescueShip);
-		Vehicle rescueBoat = new Vehicle ("Rescue Boat", 5, 7, new Step[] {new Step(0, 1, false), new Step(0, 1, true), new Step(0, 1, false), new Step(0, 1, true), new Step(1, 1, false), new Step(0, 1, true), new Step(1, 1, false)}, true, "Small rescue boat. Has a hard time to see much.", IconManager.rescueShip);
+		Vehicle rescueBoat = new Vehicle ("Rescue Boat", 5, 7, new Step[] {new Step(1, 1, false), new Step(1, 1, true), new Step(1, 1, false), new Step(1, 1, true), new Step(1, 1, false), new Step(1, 1, true), new Step(1, 1, false)}, true, "Small rescue boat. Has a hard time to see much.", IconManager.rescueShip);
 		Sonar sateliteScan = new Sonar ("Satelite Scan", 3, 3, 0f, "Uses thermal imaging to accuratly find survivors in an area. Green = hot, Red = cold", IconManager.buoyV1);
+		Sonar sonarV1 = new Sonar ("Sonar Buoy V1", 1, 5, 0.3f, "Uses sonar to listen for survivors. Green = loud, Red = silence", IconManager.buoyV1);
 		Sonar sonarV2 = new Sonar ("Sonar Buoy V2", 2, 7, 0.25f, "Uses sonar to listen for survivors. Improved range and quality. Green = loud, Red = silence", IconManager.buoyV2);
 		Scenario sea = new Scenario("Sea", size, clusters, amountOfPeople, description,
-        		new Asset[]{privateYacht, largeScoutPlane, rescueHelicopter, rescueShip, rescueBoat, sateliteScan, sonarV2});
+        		new Asset[]{privateYacht, largeScoutPlane, rescueHelicopter, rescueShip, rescueBoat, sateliteScan, sonarV1, sonarV2});
 		return sea;
 	}
 	

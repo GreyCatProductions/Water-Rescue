@@ -6,9 +6,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -229,7 +231,7 @@ public abstract class UiObjectFactory
     {
     	JPanel coordinatesPanel = new JPanel();
     	coordinatesPanel.setLayout(new BoxLayout(coordinatesPanel, BoxLayout.Y_AXIS));
-    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getPreferredSize().width, 100));
+    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getMaximumSize().width, 100));
     	JLabel topText = new JLabel("SELECTED COORDINATES");
     	JPanel coordinatesHolder = new JPanel();
     	coordinatesHolder.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -265,10 +267,126 @@ public abstract class UiObjectFactory
     	coordinatesHolder.add(yCorVisual);
     	coordinatesPanel.add(topText);
     	coordinatesPanel.add(coordinatesHolder);
+    	coordinatesPanel.setBorder(border);
     	
     	return coordinatesPanel;
     }
     
+    protected JPanel createTutorialPanel() 
+    {
+        JPanel tutorialPanel = new JPanel();
+        tutorialPanel.setLayout(new BorderLayout());
+        tutorialPanel.setPreferredSize(new Dimension(tutorialPanel.getMaximumSize().width, 100));
+        tutorialPanel.setBackground(Color.GRAY);
+        tutorialPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+        JLabel topText = new JLabel("FIELD MANUAL");
+        topText.setHorizontalAlignment(SwingConstants.CENTER);
+        topText.setFont(new Font("Arial", Font.BOLD, 16)); 
+        tutorialPanel.add(topText, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        buttonPanel.setBackground(Color.GRAY); 
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); 
+        gbc.fill = GridBagConstraints.NONE; 
+
+        JButton objectiveButton = createExplainObjectiveButton();
+        gbc.gridx = (0); 
+        gbc.gridy = (0); 
+        buttonPanel.add(objectiveButton , gbc);
+        
+        JButton mapButton = createExplainMapButton();
+        gbc.gridx = (1); 
+        gbc.gridy = (0); 
+        buttonPanel.add(mapButton , gbc);
+        
+        JButton vehicleButton = createVehicleExplainButton();
+        gbc.gridx = (0); 
+        gbc.gridy = (1); 
+        buttonPanel.add(vehicleButton, gbc);
+        
+        JButton sonarButton = createSonarExplainButton();
+        gbc.gridx = (1); 
+        gbc.gridy = (1); 
+        buttonPanel.add(sonarButton, gbc);
+
+        tutorialPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        return tutorialPanel;
+    }
+    
+    private JButton createExplainObjectiveButton()
+    {
+    	JButton button = new JButton("Objective");
+        button.setPreferredSize(standardButtonSize); 
+
+        button.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                FieldManualTutorials.showGameMechanicTutorial();
+            }
+        });
+        
+		return button;
+    }
+    
+    private JButton createExplainMapButton()
+    {
+    	JButton button = new JButton("Map");
+        button.setPreferredSize(standardButtonSize); 
+
+        button.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                FieldManualTutorials.showMapTutorial();
+            }
+        });
+        
+		return button;
+    }
+    
+    
+    private JButton createVehicleExplainButton()
+    {
+    	JButton button = new JButton("Vehicles");
+        button.setPreferredSize(standardButtonSize); 
+
+        button.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                FieldManualTutorials.showVehicleTutorial();
+            }
+        });
+        
+		return button;
+    }
+
+    private JButton createSonarExplainButton()
+    {
+    	JButton button = new JButton("Sonars");
+        button.setPreferredSize(standardButtonSize); 
+
+        button.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                FieldManualTutorials.showSonarTutorial();;
+            }
+        });
+        
+		return button;
+    }
+ 
     protected JPanel createMainGamePanel(int size)
     {
         JPanel mainGamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -403,11 +521,21 @@ public abstract class UiObjectFactory
 
         buttonsPanel.add(selectButton);
         buttonsPanel.add(deployButton);
-
+        
         assetWindow.add(buttonsPanel, BorderLayout.SOUTH);
 
-        int extraWidth = 100; 
-        int width = assetWindow.getPreferredSize().width + extraWidth;
+        JPanel logoContainer = new JPanel();
+        logoContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
+        logoContainer.setOpaque(false);
+        ImageIcon logoIcon = asset.getIcon();
+        Image scaledImage = logoIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(scaledImage);
+        JLabel gameLogo = new JLabel(logoIcon);
+        logoContainer.add(gameLogo);
+        
+        assetWindow.add(logoContainer);
+        
+        int width = assetWindow.getMaximumSize().width;
         int height = assetWindow.getPreferredSize().height + 15;
 
         assetWindow.setMaximumSize(new Dimension(width, height));

@@ -166,15 +166,15 @@ public class Sonar extends Asset {
     	int selectedY = GameManager.instance.selectedY;
     	int scenarioSize = GameManager.chosenScenario.size;
     	
-        for (int dx = -radius; dx <= radius; dx++) 
+        for (int dx = -radius; dx < radius; dx++) 
         {
-            for (int dy = -radius; dy <= radius; dy++) 
+            for (int dy = -radius; dy < radius; dy++) 
             {
                 int x = selectedX + dx;
                 int y = selectedY + dy;
 
                 if (x >= 0 && x < scenarioSize && y >= 0 && y < scenarioSize &&
-                    Math.abs(dx) + Math.abs(dy) <= radius) 
+                    Math.abs(dx) + Math.abs(dy) < radius) 
                 {                 
                 	GameManager.instance.changeFieldColor(x, y, GameColors.selectedColor);
                 }

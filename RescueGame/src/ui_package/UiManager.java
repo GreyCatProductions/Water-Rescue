@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -193,9 +194,19 @@ public class UiManager extends UiObjectFactory
         JPanel eastPanel = createEastPanel(eastPanelWidth);
         JPanel mainGamePanel = createMainGamePanel(scenario.size);
         assetPanel = createAssetPanel();
+        
+        JPanel bottomPanelContainer = new JPanel();
+        bottomPanelContainer.setLayout(new BoxLayout(bottomPanelContainer, BoxLayout.Y_AXIS));
+        bottomPanelContainer.setBackground(Color.GRAY);
+        
         JPanel coordinatesPanel = createCoordinatesPanel();
+        JPanel fieldManualPanel = createTutorialPanel();
+        
+        bottomPanelContainer.add(coordinatesPanel);
+        bottomPanelContainer.add(fieldManualPanel);
+        
         eastPanel.add(assetPanel, BorderLayout.CENTER);
-        eastPanel.add(coordinatesPanel, BorderLayout.SOUTH);
+        eastPanel.add(bottomPanelContainer, BorderLayout.SOUTH);
         
         LostPeopleManager.INSTANCE.placePeople(scenario);
         drawAssets(assetPanel, scenario.assets);

@@ -15,7 +15,7 @@ public class Vehicle extends Asset
     public Boolean canRescue;
     public Boolean affectedByX; 
     public Boolean affectedByY; 
-    public int speed; //Sollte für den Normalfall zwischen 1 und 10 sein
+    public int speed; // 1 - 10
 
     public Vehicle(String name, int amount, int speed, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
     {

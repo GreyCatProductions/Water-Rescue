@@ -112,6 +112,10 @@ public class GameManager extends JFrame
     
     public void updateFieldColor(int x, int y) //Färbt Feld anhand dessen Zustands
     {
+    	if(x == selectedX && y == selectedY)
+    	{
+    		changeFieldColor(x, y, GameColors.selectedColor);
+    	}
     	if(foundFields[x][y] && !rescuedFields[x][y])
 		{
 			changeFieldColor(x, y, GameColors.foundColor);
