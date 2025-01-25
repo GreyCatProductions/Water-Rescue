@@ -9,6 +9,12 @@ import ui_package.UiManager;
 import java.awt.*;
 import java.util.*;
 
+/**
+ * 
+ */
+/**
+ * 
+ */
 public class GameManager extends JFrame 
 {
 	private static final long serialVersionUID = 1L;
@@ -16,7 +22,6 @@ public class GameManager extends JFrame
 	public static Scenario chosenScenario;
     
     public JButton[][] gameFields;
-    public volatile Boolean[][] changedFields;
     public int usesLeft;
     public volatile Boolean[][] searchedFields; 
     public volatile Boolean[][] foundFields;
@@ -30,7 +35,16 @@ public class GameManager extends JFrame
     
     public static GameManager instance;
     
-    public GameManager(boolean testing) //Konstruiert das JFrame und ruft Hauptmenü Erstellung auf, public for testing
+	 /**
+	 * Constructs frame if not testing
+	 * <p>
+	 * If testing is true, the constructor only assigns this class as the static instance. 
+	 * If testing is false, creates the JFrame using {@link UiManager} instance,
+	 * and in the end sets the frame visible.
+	 * @param testing
+	 * @see UiManager#createMainMenu()
+	 */
+    public GameManager(boolean testing)
     {
     	instance = this;
     	if(!testing)
@@ -49,7 +63,17 @@ public class GameManager extends JFrame
     	}
     }
     
-    public void initializeMainGame(Scenario scenario) //Wird vom StartGame Knopf im Startmenü aufgerufen
+	/**
+	 * Initializes the main game. 
+	 * <p>
+	 * This method clears the existing content of the frame, initializes game variables 
+	 * based on the provided scenario size, creates the game canvas using the 
+	 * {@link UiManager} instance, and finally updates the frame's display.
+	 *
+	 * @param scenario The game scenario to be loaded.
+	 * @see UiManager#createGameCanvas(Scenario)
+	 */
+    public void initializeMainGame(Scenario scenario)
     {
         frame.getContentPane().removeAll(); 
         
@@ -61,19 +85,26 @@ public class GameManager extends JFrame
         frame.repaint();  
     }
     
-    public void initializeMainGameVariables(int size) //public for testing 
+    
+    /**
+     * Initializes the variables for the main game
+     * <p>
+     * The method sets all game necessary parameters to their default state depending on
+     * the size parameter. Also calls {@link LostPeopleManager} to initialize its variables too. 
+     * @param size
+     * @see LostPeopleManager#initializeVariables(int)
+     */
+    public void initializeMainGameVariables(int size) 
     {
         gameFields = new JButton[size][size];
         LostPeopleManager.INSTANCE.initializeVariables(size);
         foundFields = new Boolean[size][size];
-        changedFields = new Boolean[size][size];
         rescuedFields = new Boolean[size][size];
         markedFields = new Boolean[size][size];
         searchedFields = new Boolean[size][size];
         
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-            	changedFields[i][j] = false;
                 searchedFields[i][j] = false; 
                 foundFields[i][j] = false; 
                 rescuedFields[i][j] = false; 
@@ -84,7 +115,18 @@ public class GameManager extends JFrame
         usesLeft = 0;
     }
 
-    public void selectField(int x, int y) //Drück-Funktion, die auf jedem Spielfeld ist
+    /**
+     * Updates selected coordinates and paints selected field
+     * <p>
+     * this method resets all fields colors with resetGridColors(). 
+     * if the pressed coordinates are the same as the currently selected, 
+     * inverts value of markedFields at the coordinates, then calls updateFieldColor.
+     * @param x
+     * @param y
+     * @see GameManager#resetGridColors() 
+     * @see GameManager#updateFieldColor(int, int)
+     */
+    public void selectField(int x, int y) 
     {
     	resetGridColors();
     	if(selectedX == x && selectedY == y)
@@ -97,23 +139,38 @@ public class GameManager extends JFrame
         	selectedX = x;
         	selectedY = y;
         	UiManager.instance.setVisualCoordinates(x, y);
-    		changeFieldColor(x, y, GameColors.selectedColor);
+    		updateFieldColor(x,y);
     	}
     }
     
-    public void resetGridColors() //Setzt alle Felder auf ihre richtige Farbe zurück
+    /**
+     * Sets every fields color to its proper value
+     * <p>
+     * this method loop trough all coordinates and calls updateFieldColor(x, y) 
+     * on those.
+     * @see GameManager#updateFieldColor(int, int)
+     */
+    public void resetGridColors()
     {
-    	for(int x = 0; x < changedFields.length; x++)
+    	for(int x = 0; x < chosenScenario.size; x++)
     	{
-        	for(int y = 0; y < changedFields.length; y++)
+        	for(int y = 0; y < chosenScenario.size; y++)
         	{
         		updateFieldColor(x, y);
-        		changedFields[x][y] = false;
         	}
     	}
     }   
     
-    public void updateFieldColor(int x, int y) //Färbt Feld anhand dessen Zustands
+    /**
+     * Changes color of field to proper color.
+     * <p>
+     * this method checks the status of bool arrays on given coordinates. 
+     * Depending on the status, calls changeFieldColor with a certain color on the coordinates.
+     * @param x
+     * @param y
+     * @see GameManager#updateFieldColor(int, int)
+     */
+    public void updateFieldColor(int x, int y)
     {
     	if(x == selectedX && y == selectedY)
     	{
@@ -145,10 +202,15 @@ public class GameManager extends JFrame
 		}
     }
     
+    /**
+     * paints field on given coordinates a certain color.
+     * @param x
+     * @param y
+     * @param color
+     */
     public void changeFieldColor(int x, int y, Color color)
     {
-	        gameFields[x][y].setBackground(color);
-	        changedFields[x][y] = true;
+        gameFields[x][y].setBackground(color);
     }
        
     public static void main(String[] args)

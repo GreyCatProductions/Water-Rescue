@@ -22,22 +22,38 @@ public abstract class Asset
         this.description = description;
         this.icon = icon;
     }
-    
+
+    /**
+     * name getter
+     * @return returns the name
+     */
     public String getName()
     {
     	return name;
     }
     
+    /**
+     * description getter
+     * @return returns the description
+     */
     public String getDescription()
     {
     	return description;
     }
     
+    /**
+     * amount getter
+     * @return returns the amount
+     */
     public int getAmount()
     {
     	return amount;
     }
     
+    /**
+     * icon getter
+     * @return the icon
+     */
     public ImageIcon getIcon()
     {
     	return icon;
@@ -50,11 +66,19 @@ public abstract class Asset
 	    updateTextAreaText();
     }
     
-    public void assignTextAreaReference(JTextArea area)
+    /**
+     * textArea setter
+     * @param sets the given JTextArea to myTextArea
+     */
+    public void setTextAreaReference(JTextArea area)
     {
     	myTextArea = area;
     }
     
+    /**
+     * Updates myTextArea text depending on current variables. Then calls {@link UiManager} to redraw the assetPanel.
+     * @see UiManager#assetPanel
+     */
     public void updateTextAreaText()
     {
         if(this instanceof Sonar)

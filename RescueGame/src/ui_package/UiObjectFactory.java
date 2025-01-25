@@ -464,7 +464,7 @@ public abstract class UiObjectFactory
         assetWindow.setLayout(new BorderLayout());
 
         JTextArea statsTextArea = new JTextArea();
-        asset.assignTextAreaReference(statsTextArea);
+        asset.setTextAreaReference(statsTextArea);
         asset.updateTextAreaText();
         
         statsTextArea.setLineWrap(true);
