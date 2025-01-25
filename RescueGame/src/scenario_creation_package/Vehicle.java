@@ -11,23 +11,43 @@ import ui_package.UiManager;
 
 public class Vehicle extends Asset 
 {
-    public Step[] movePattern;
+    public Step[] steps;
     public Boolean canRescue;
     public Boolean affectedByX; 
     public Boolean affectedByY; 
-    public int speed; // 1 - 10
+    public int speed; 
 
+    /**
+     * @param name name of the vehicle
+     * @param amount amount of available vehicles
+     * @param speed speed the vehicle moves at. Should be 1 - 10
+     * @param steps steps for the vehicle to take
+     * @param canRescue vehicle is able to rescue people 
+     * @param description description of the vehicle
+     * @param icon icon of the vehicle
+     */
     public Vehicle(String name, int amount, int speed, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon) 
     {
         this(name, amount, speed, movePattern, canRescue, description, icon, true, true);
     }
 
-    public Vehicle(String name, int amount, int speed, Step[] movePattern, Boolean canRescue, String description, ImageIcon icon, Boolean affectedByX, Boolean affectedByY) 
+    /**
+     * @param name name of the vehicle
+     * @param amount amount of available vehicles
+     * @param speed speed the vehicle moves at. Should be 1 - 10
+     * @param steps steps for the vehicle to take
+     * @param canRescue vehicle is able to rescue people 
+     * @param description description of the vehicle
+     * @param icon icon of the vehicle
+     * @param affectedByX vehicle is affected by x coordinate
+     * @param affectedByY vehicle is affected by y coordinate
+     */
+    public Vehicle(String name, int amount, int speed, Step[] steps, Boolean canRescue, String description, ImageIcon icon, Boolean affectedByX, Boolean affectedByY) 
     {
         super(name, amount, description, icon);
         this.affectedByX = affectedByX;
         this.affectedByY = affectedByY;
-        this.movePattern = movePattern;
+        this.steps = steps;
         this.canRescue = canRescue;
         this.speed = speed;
     }
@@ -49,7 +69,7 @@ public class Vehicle extends Asset
             try {
                 GameManager.instance.activeThreads.add(Thread.currentThread());
 
-                for (Step step : movePattern) 
+                for (Step step : steps) 
                 {
                     int xToMove = step.x;
                     int yToMove = step.y;
@@ -101,7 +121,7 @@ public class Vehicle extends Asset
         moveThread.start();
     }
 
-    protected void showPreview() //Markiert den Bereich, der bei Nutzung des gegebenen Assets durchgegangen würde
+    protected void showPreview()
     {
     	int selectedX = GameManager.instance.selectedX;
     	int selectedY = GameManager.instance.selectedY;
@@ -115,7 +135,7 @@ public class Vehicle extends Asset
 		int curX = affectedByX ? selectedX : 0;
 		int curY =affectedByY ? selectedY : 0;
 
-		for(Step step : movePattern)
+		for(Step step : steps)
 		{
 			int xToMove = step.x;
 			int yToMove = step.y;
@@ -191,8 +211,13 @@ public class Vehicle extends Asset
 	    GameManager.instance.updateFieldColor(x, y);
     }
     
+    /**
+     * this method returns a deep copy of this object
+     * @returns deep copy of this vehicle
+     * @see Vehicle#Vehicle(String, int, int, Step[], Boolean, String, ImageIcon, Boolean, Boolean)
+     */
     public Vehicle deepCopy()
     {
-    	return new Vehicle(name, amount, speed, movePattern, canRescue, description, icon, affectedByX, affectedByY);
+    	return new Vehicle(name, amount, speed, steps, canRescue, description, icon, affectedByX, affectedByY);
     }
 }

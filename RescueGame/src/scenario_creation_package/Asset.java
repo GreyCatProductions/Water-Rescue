@@ -15,8 +15,21 @@ public abstract class Asset
     protected ImageIcon icon;
     protected String description;
 
+    /**
+     * Super constructor for asset types
+     * @param name name of the asset
+     * @param amount amount of available assets of this type
+     * @param description description of the asset
+     * @param icon of the asset
+     * @throws IllegalArgumentException amount must not be negative
+     */
     public Asset(String name, int amount, String description, ImageIcon icon) 
     {
+    	if(amount < 0)
+    	{
+    		throw new IllegalArgumentException("parameter 'amount' must not be negative!");
+    	}
+    	
         this.name = name;
         this.amount = amount;
         this.description = description;
@@ -76,7 +89,7 @@ public abstract class Asset
     }
     
     /**
-     * Updates myTextArea text depending on current variables. Then calls {@link UiManager} to redraw the assetPanel.
+     * Sets myTextArea text depending on current variables. Then calls {@link UiManager} to redraw the assetPanel.
      * @see UiManager#assetPanel
      */
     public void updateTextAreaText()
@@ -90,16 +103,33 @@ public abstract class Asset
         {
         	Vehicle vehicle = (Vehicle)this;
         	String textAdd = vehicle.canRescue ? "X" : "";
-            String pattern = vehicle.movePattern.length == 1 ? "(" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")" : "complex";
+            String pattern = vehicle.steps.length == 1 ? "(" + vehicle.steps[0].x + " x " + vehicle.steps[0].y + ")" : "complex";
             myTextArea.setText(name + textAdd + "\n\nPattern: " + pattern + "\nAmount: " + amount);
         }
+        
 	    UiManager.instance.assetPanel.revalidate();
 	    UiManager.instance.assetPanel.repaint();
     }
     
+    /**
+     * safely tries to use asset
+     * <p>
+     * this method checks if a valid coordinate is selected and asset has uses left.
+     * If not, shows a proper dialogue to the user and returns.
+     * 
+     * If valid, calls reduceAmountByOne() and action() depending on the type of the asset. 
+     * 
+     * @see Asset#reduceAmountByOne()
+     * @see Sonar#action()
+     * @see Vehicle#action()
+     */
     public void tryToUse()
     {
-    	if(GameManager.instance.selectedX == -1 || GameManager.instance.selectedY == -1)
+    	int x = GameManager.instance.selectedX;
+    	int y = GameManager.instance.selectedY;
+    	int size = GameManager.chosenScenario.size;
+    	
+    	if(x > size || x < 0 || y > size || y < 0)
     	{
     		JOptionPane.showMessageDialog(GameManager.frame, "Select a field before sending your asset somewhere!");
     		return;
@@ -125,11 +155,22 @@ public abstract class Asset
         }
     }
     
+    /**
+     * safely tries to preview the assets area of action
+     * <p>
+     * this method checks if a valid coordiante is selected.
+     * if not, shows a dialogue to the user and returns.
+     * 
+     * If valid, calls showPreview() depending on the type of the asset.
+     * 
+     * @see Vehicle#showPreview()
+     * @see Sonar#showPreview()
+     */
     public void tryToPreview()
     {
     	if(GameManager.instance.selectedX == -1 || GameManager.instance.selectedY == -1)
     	{
-    		JOptionPane.showMessageDialog(null, "Select a field before trying to preview!");
+    		JOptionPane.showMessageDialog(GameManager.frame, "Select a field before trying to preview!");
     		return;
     	}
     	

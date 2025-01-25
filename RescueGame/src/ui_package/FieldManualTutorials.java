@@ -6,6 +6,9 @@ import main.GameManager;
 
 public class FieldManualTutorials 
 {
+	/**
+	 * shows message dialog with game mechanic as content
+	 */
 	public static void showGameMechanicTutorial()
 	{
 		String text = "Operator, you are in charge of water rescue operations.\n"
@@ -18,6 +21,9 @@ public class FieldManualTutorials
 		showMessage(text);
 	}
 	
+	/**
+	 * shows message dialog with {@link Vehicle} explanation as content
+	 */
 	public static void showVehicleTutorial()
 	{
 		String text = "Vehicles are your only tool to save survivors.\n"
@@ -29,6 +35,9 @@ public class FieldManualTutorials
 		showMessage(text);
 	}
 	
+	/**
+	 * shows message dialog with {@link Sonar} explanation as content
+	 */
 	public static void showSonarTutorial()
 	{
 		String text = "Sonar buoys use sonar to detect sound of survivors in a huge radius.\n"
@@ -38,6 +47,9 @@ public class FieldManualTutorials
 		showMessage(text);
 	}
 	
+	/**
+	 * shows message dialog with map explanation as content
+	 */
 	public static  void showMapTutorial()
 	{
 		String text = "Your map is the latest technology available. It offers you an interactive map.\n"

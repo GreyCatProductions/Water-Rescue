@@ -1,11 +1,15 @@
 package scenario_creation_package;
 import java.util.LinkedList;
 import icons.IconManager;
+import java.io.IOException;
 
 public class ScenarioManager 
 {
 	private static LinkedList<Scenario> scenarios;
 
+	/**
+	 * Fills the scenario list by calling all creation methods.
+	 */
 	public static void createScenarios()
 	{
 		scenarios = new LinkedList<Scenario>();
@@ -95,16 +99,38 @@ public class ScenarioManager
 		return ocean;
 	}
 
+	/**
+	 * Getter for a deep copy of a scenario from the scenarios list by index.
+	 * <p>
+	 * this method returns a deep copied scenario from the scenario list
+	 * 
+	 * @param index of scenario
+	 * @returns a deep copy of a scenario by index
+	 * @throws throws IndexOutOfBoundsException if scenario is out of bounds
+	 */
 	public static Scenario getScenario(int i)
 	{
+		int amount = scenarios.size();
+		if(i < 0 || i >= amount)
+		{
+			throw new IndexOutOfBoundsException("paramter 'i' must not be negative or larger than the size of scenarios!");
+		}
 		return new Scenario(scenarios.get(i));
 	}
 	
+	/**
+	 * Getter for amount of scenarios
+	 * @return amount of scenarios
+	 */
 	public static int getAmountOfScenarios() 
 	{
 		return scenarios.size();
 	}
 	
+	/**
+	 * @param scenario scenario to get index of
+	 * @return index of the scenario. If not found, -1
+	 */
 	public static int getIndexOfScenario(Scenario scenario) 
 	{
 	    for (int i = 0; i < scenarios.size(); i++) 

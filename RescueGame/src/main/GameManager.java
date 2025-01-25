@@ -5,7 +5,6 @@ import icons.IconManager;
 import scenario_creation_package.Scenario;
 import ui_package.GameColors;
 import ui_package.UiManager;
-
 import java.awt.*;
 import java.util.*;
 
@@ -41,7 +40,7 @@ public class GameManager extends JFrame
 	 * If testing is true, the constructor only assigns this class as the static instance. 
 	 * If testing is false, creates the JFrame using {@link UiManager} instance,
 	 * and in the end sets the frame visible.
-	 * @param testing
+	 * @param testing if enabled, skips the initialization of visuals. 
 	 * @see UiManager#createMainMenu()
 	 */
     public GameManager(boolean testing)
@@ -72,9 +71,15 @@ public class GameManager extends JFrame
 	 *
 	 * @param scenario The game scenario to be loaded.
 	 * @see UiManager#createGameCanvas(Scenario)
+	 * @throws IllegalArgumentException if scenario is null
 	 */
     public void initializeMainGame(Scenario scenario)
     {
+    	if(scenario == null)
+    	{
+    		throw new IllegalArgumentException("Parameter 'scenario' must not be null");
+    	}
+    	
         frame.getContentPane().removeAll(); 
         
         initializeMainGameVariables(scenario.size);
@@ -91,11 +96,17 @@ public class GameManager extends JFrame
      * <p>
      * The method sets all game necessary parameters to their default state depending on
      * the size parameter. Also calls {@link LostPeopleManager} to initialize its variables too. 
-     * @param size
+     * @param size - size to initialize the arrays with
      * @see LostPeopleManager#initializeVariables(int)
+     * @throw IllegalArgumentException - size must be positive
      */
     public void initializeMainGameVariables(int size) 
     {
+    	if(size <= 0)
+    	{
+    		throw new IllegalArgumentException("paramter 'size' must be positive");
+    	}
+    	
         gameFields = new JButton[size][size];
         LostPeopleManager.INSTANCE.initializeVariables(size);
         foundFields = new Boolean[size][size];
@@ -121,13 +132,19 @@ public class GameManager extends JFrame
      * this method resets all fields colors with resetGridColors(). 
      * if the pressed coordinates are the same as the currently selected, 
      * inverts value of markedFields at the coordinates, then calls updateFieldColor.
-     * @param x
-     * @param y
+     * @param x - coordinate to check
+     * @param y - coordinate to check
      * @see GameManager#resetGridColors() 
      * @see GameManager#updateFieldColor(int, int)
+     * @throws IndexOutOfBoundsException x or y has invalid value.
      */
     public void selectField(int x, int y) 
     {
+    	if(x > chosenScenario.size || x < 0 || y > chosenScenario.size || y < 0)
+    	{
+    		throw new IndexOutOfBoundsException(String.format("x = %d, y = %d are not valid coordinates", x, y));
+    	}
+    	
     	resetGridColors();
     	if(selectedX == x && selectedY == y)
     	{
@@ -164,14 +181,20 @@ public class GameManager extends JFrame
     /**
      * Changes color of field to proper color.
      * <p>
-     * this method checks the status of bool arrays on given coordinates. 
+     * this method checks the status of boolean arrays on given coordinates. 
      * Depending on the status, calls changeFieldColor with a certain color on the coordinates.
-     * @param x
-     * @param y
+     * @param x - coordinate to use
+     * @param y - coordinate to use
      * @see GameManager#updateFieldColor(int, int)
+     * @throws IndexOutOfBoundsException if coordinates are out of range.
      */
     public void updateFieldColor(int x, int y)
     {
+    	if(x > chosenScenario.size || x < 0 || y > chosenScenario.size || y < 0)
+    	{
+    		throw new IndexOutOfBoundsException(String.format("x = %d, y = %d are not valid coordinates", x, y));
+    	}
+    	
     	if(x == selectedX && y == selectedY)
     	{
     		changeFieldColor(x, y, GameColors.selectedColor);
@@ -204,12 +227,24 @@ public class GameManager extends JFrame
     
     /**
      * paints field on given coordinates a certain color.
-     * @param x
-     * @param y
-     * @param color
+     * @param x - coordinate to use
+     * @param y - coordinate to use
+     * @param color - color to apply
+     * @throws IndexOutOfBoundsException if coordinates are out of range.
+     * @throws IllegalArgumentException - if color is null
      */
     public void changeFieldColor(int x, int y, Color color)
     {
+    	if(x > chosenScenario.size || x < 0 || y > chosenScenario.size || y < 0)
+    	{
+    		throw new IndexOutOfBoundsException(String.format("x = %d, y = %d are not valid coordinates", x, y));
+    	}
+    	
+    	if(color == null)
+    	{
+    		throw new IllegalArgumentException("parameter 'color' must not be null!");
+    	}
+    	
         gameFields[x][y].setBackground(color);
     }
        

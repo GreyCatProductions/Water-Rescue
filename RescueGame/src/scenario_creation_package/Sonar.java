@@ -19,14 +19,34 @@ public class Sonar extends Asset {
 	public int radius;
 	public float maxNoise;
     
+    /**
+     * Constructor for a sonar asset
+     * @param name name of the sonar
+     * @param amount amount of available sonars
+     * @param radius range of the sonar
+     * @param maxNoise value between 0.0 and 1.0 determining the deviation from real value
+     * @param description description of the sonar
+     * @param icon icon of the sonar
+     * @throws
+     */
     public Sonar(String name, int amount, int radius, float maxNoise, String description, ImageIcon icon) 
-    {
+    {    	
         super(name, amount, description, icon);
+        
+        if(radius < 0)
+        {
+        	throw new IllegalArgumentException("parameter 'radius' must not be negative!");
+        }
         this.radius = radius;
+        
+        if(maxNoise < 0 || maxNoise > 1)
+        {
+        	throw new IllegalArgumentException("parameter 'maxNoise' must be a value between 0.0 and 1.0!");
+        }
         this.maxNoise = maxNoise;
     }
     
-    public void action()
+    protected void action()
     {
     	placeIcon();
     	Thread thread = new Thread(sonarThread);
@@ -160,7 +180,7 @@ public class Sonar extends Asset {
 	    IconManager.INSTANCE.createIcon(solarIcon);
     }
     
-    public void showPreview()
+    protected void showPreview()
     {
     	int selectedX = GameManager.instance.selectedX;
     	int selectedY = GameManager.instance.selectedY;
@@ -182,6 +202,11 @@ public class Sonar extends Asset {
         }
     }
     
+    /**
+     * this method returns a deep copy of this object
+     * @returns deep copy of this sonar
+     * @see Sonar#Sonar(String, int, int, float, String, ImageIcon)
+     */
     public Sonar deepCopy()
     {
     	return new Sonar(name, amount, radius, maxNoise, description, icon);

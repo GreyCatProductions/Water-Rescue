@@ -38,9 +38,21 @@ public class SaveLoadManager
      * @param playerName
      * @param stats
      * @see SaveLoadManager#saveGameData()
+     * @throws IllegalArgumentException stats has a different length than the amount of scenarios
+     * @throws IllegalArgumentException playerName is null
      */
     public static void saveStats(String playerName, int[] stats) 
     {
+    	if(stats.length != ScenarioManager.getAmountOfScenarios())
+    	{
+    		throw new IllegalArgumentException("parameter 'stats' must be the length of all scenarios!");
+    	}
+    	
+    	if(playerName == null)
+    	{
+    		throw new IllegalArgumentException("parameter 'playername' must not be null!");
+    	}
+    	
         savedData.put(playerName, stats);
         saveGameData();
     }

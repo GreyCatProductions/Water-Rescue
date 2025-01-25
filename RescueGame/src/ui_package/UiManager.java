@@ -41,6 +41,9 @@ public class UiManager extends UiObjectFactory
     	instance = this;
     }
     
+    /**
+     * Clears the main frame. Draws the main menu
+     */
     public void createMainMenu()
     {
         GameManager.frame.getContentPane().removeAll(); 
@@ -99,6 +102,9 @@ public class UiManager extends UiObjectFactory
         GameManager.frame.repaint();   
     }
 
+    /**
+     * Clears the main frame. Draws the level selection menu
+     */
 	public void createLevelSelection()
 	{
 	    GameManager.frame.getContentPane().removeAll();
@@ -154,9 +160,9 @@ public class UiManager extends UiObjectFactory
 	                {
 	                    Vehicle vehicle = (Vehicle) asset;
 	                    String pattern = "complex";
-	                    if(vehicle.movePattern.length == 1)
+	                    if(vehicle.steps.length == 1)
 	                    {
-	                    	pattern = "pattern: (" + vehicle.movePattern[0].x + " x " + vehicle.movePattern[0].y + ")";
+	                    	pattern = "pattern: (" + vehicle.steps[0].x + " x " + vehicle.steps[0].y + ")";
 	                    }
 	                    assetsInfo.append(pattern);
 	                } else if (asset instanceof Sonar) {
@@ -188,8 +194,18 @@ public class UiManager extends UiObjectFactory
 	    GameManager.frame.repaint();
 	}
    
+    /**
+     * Draws game canvas with given scenario
+     * @param scenario scenario to create canvas for
+     * @throws IllegalArgumentException scenario parameter must not be null
+     */
     public void createGameCanvas(Scenario scenario)
     {
+    	if(scenario == null)
+    	{
+    		throw new IllegalArgumentException("parameter 'scenario' must not be null!");
+    	}
+    	
         int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
         JPanel eastPanel = createEastPanel(eastPanelWidth);
         JPanel mainGamePanel = createMainGamePanel(scenario.size);
@@ -215,12 +231,27 @@ public class UiManager extends UiObjectFactory
         GameManager.frame.add(eastPanel, BorderLayout.EAST);
     }
 
+    /**
+     * sets visual coordinates
+     * @param x x coordinate value to set
+     * @param y y coordinate value to set
+     */
     public void setVisualCoordinates(int x, int y)
     {
     	xCorVisual.setText(Integer.toString(x));
     	yCorVisual.setText(Integer.toString(y));
     }
     
+    /**
+     * creates and pop ups end game dialog
+     * <p>
+     * This method creates and pop ups end game dialog. The dialog is created depending 
+     * on the chosen scenario from {@link GameManager} and the amount of survivorsSaved.
+     * Adds a listener to the okay button of the dialog to go call {@link UiManager} to draw the 
+     * level selection menu.
+     * @param survivorsSaved amount of survivors saved
+     * @see UiManager#createLevelSelection()
+     */
     public void createEndGameDialog(int survivorsSaved) 
     {
     	int[] stats = SaveLoadManager.getStats(chosenUserName);
@@ -279,6 +310,15 @@ public class UiManager extends UiObjectFactory
     	dialog.setVisible(true);
     }
 
+    /**
+     * Draws all given assets on given panel
+     * <p>
+     * This method uses {@link UiManager} to draw an assetWindow on the given JPanel for each {@link Asset} in the
+     * asset array. 
+     * @param panelToDrawOn panel to add the created assets to
+     * @param assets all assets to draw
+     * @see Asset#getAmount()
+     */
     public void drawAssets(JPanel panelToDrawOn, Asset[] assets)
     {
         for (Asset asset : assets) 
