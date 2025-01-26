@@ -1,7 +1,6 @@
 package scenario_creation_package;
 import java.util.LinkedList;
 import icons.IconManager;
-import java.io.IOException;
 
 public class ScenarioManager 
 {
@@ -113,7 +112,7 @@ public class ScenarioManager
 		int amount = scenarios.size();
 		if(i < 0 || i >= amount)
 		{
-			throw new IndexOutOfBoundsException("paramter 'i' must not be negative or larger than the size of scenarios!");
+			throw new IndexOutOfBoundsException("parameter 'i' must not be negative or larger than the size of scenarios!");
 		}
 		return new Scenario(scenarios.get(i));
 	}

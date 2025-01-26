@@ -90,7 +90,6 @@ public class GameManager extends JFrame
         frame.repaint();  
     }
     
-    
     /**
      * Initializes the variables for the main game
      * <p>

@@ -27,25 +27,21 @@ class VehicleTester
     @Test
     public void testConstructor() 
     {
-        System.out.println("Running testConstructor...");
         assertNotNull(vehicle, "Vehicle should be properly instantiated.");
         assertEquals("Test Vehicle", vehicle.getName(), "Vehicle name should match.");
         assertEquals(5, vehicle.getAmount(), "Vehicle amount should match.");
         assertEquals(5, vehicle.speed, "Vehicle speed should match.");
         assertTrue(vehicle.canRescue, "Vehicle should be able to rescue.");
         assertNotNull(vehicle.steps, "Move pattern should not be null.");
-        System.out.println("testConstructor passed.");
     }
 
     @Test
     public void testMovementPattern() 
     {
-        System.out.println("Running testMovementPattern...");
         Step step = vehicle.steps[0];
         assertEquals(2, step.x, "Step X value should be 2.");
         assertEquals(1, step.y, "Step Y value should be 1.");
         assertFalse(step.noUse, "Step should not be marked as noUse.");
-        System.out.println("testMovementPattern passed.");
     }
 }
 

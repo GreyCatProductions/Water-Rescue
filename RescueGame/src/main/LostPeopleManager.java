@@ -103,9 +103,10 @@ public class LostPeopleManager
      * 
      * @param x - coordinate to check
      * @param y - coordinate to check
+     * @param ignoreVisualFeedback - if true, does not draw dialogues
      * @throws IndexOutOfBoundsException x or y has invalid value
      */
-    public synchronized void rescuePeople(int x, int y)
+    public synchronized void rescuePeople(int x, int y, boolean ignoreVisualFeedback)
     {
     	int size = survivors.length;
     	if(x < 0 || y < 0 || x >= size || y >= size)
@@ -116,11 +117,12 @@ public class LostPeopleManager
     	if(survivorsPresent(x, y))
     	{
         	GameManager.instance.rescuedFields[x][y] = true;
-            JOptionPane.showMessageDialog(GameManager.frame, survivors[x][y] + " people saved.");
+        	if(!ignoreVisualFeedback) {JOptionPane.showMessageDialog(GameManager.frame, survivors[x][y] + " people saved.");}
+
             survivorsSaved += survivors[x][y];
             survivors[x][y] = 0;
 
-            if (survivorsSaved == GameManager.chosenScenario.survivors) 
+            if (survivorsSaved == GameManager.chosenScenario.survivors && !ignoreVisualFeedback) 
             {
                 UiManager.instance.createEndGameDialog(survivorsSaved);
             }

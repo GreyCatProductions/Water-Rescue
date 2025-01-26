@@ -144,7 +144,7 @@ public class UiManager extends UiObjectFactory
 	
 	    ScenarioManager.createScenarios();
 	    
-	    int[] highscores = SaveLoadManager.getStats(chosenUserName);
+	    int[] highscores = SaveLoadManager.getUserHighscores(chosenUserName);
 	    
 	    for(int i = 0; i < ScenarioManager.getAmountOfScenarios(); i++) 
 	    {
@@ -254,7 +254,7 @@ public class UiManager extends UiObjectFactory
      */
     public void createEndGameDialog(int survivorsSaved) 
     {
-    	int[] stats = SaveLoadManager.getStats(chosenUserName);
+    	int[] stats = SaveLoadManager.getUserHighscores(chosenUserName);
     	stats[ScenarioManager.getIndexOfScenario(GameManager.chosenScenario)] = survivorsSaved;
     	SaveLoadManager.saveStats(chosenUserName, stats);
     	

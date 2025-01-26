@@ -19,13 +19,13 @@ public class SaveLoadManager
      * Returns highscores of given player name
      * <p>
      * this method loads the game data. Then returns the highscores of the player or if not
-     * found an array the length of the scenarios.
+     * found, returns an array the length of the scenarios.
      * @param playerToFind
      * @return highscore array of highscores reached by the player.
      * @see SaveLoadManager#loadGameData()
      * @see ScenarioManager#getAmountOfScenarios()
      */
-    public static int[] getStats(String playerToFind) 
+    public static int[] getUserHighscores(String playerToFind) 
     {
         savedData = loadGameData();
         return savedData.getOrDefault(playerToFind, new int[ScenarioManager.getAmountOfScenarios()]);
@@ -57,14 +57,6 @@ public class SaveLoadManager
         saveGameData();
     }
     
-    /**
-     * @param score
-     * @return Returns the given score as string
-     */
-    public static String getUserHighscore(int score)
-    {
-    	return String.valueOf(score);
-    }
     
     private static void saveGameData() 
     {

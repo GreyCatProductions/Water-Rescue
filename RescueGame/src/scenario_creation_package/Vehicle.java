@@ -196,7 +196,7 @@ public class Vehicle extends Asset
 	    {
 	        if (canRescue) 
 	        {
-	        	LostPeopleManager.INSTANCE.rescuePeople(x, y);
+	        	LostPeopleManager.INSTANCE.rescuePeople(x, y, false);
 	        } 
 	        else 
 	        {

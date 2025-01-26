@@ -13,7 +13,8 @@ class IconManagerTester
     @Test
     public void testIconResources() 
     {
-        String[] resourcePaths = {
+        String[] resourcePaths = 
+    	{
             "/icons/satellite1.png",
             "/icons/fisher1.png",
             "/icons/smallShipv1.png",

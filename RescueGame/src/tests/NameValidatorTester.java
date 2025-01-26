@@ -7,35 +7,35 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NameValidatorTester 
 {
     @Test
-    void testValidNames() {
+    void testValidNames() 
+    {
         assertTrue(NameValidator.IsValidName("Max"), "Name 'Max' should be valid.");
         assertTrue(NameValidator.IsValidName("Max Muster"), "Name 'Max Muster' should be valid.");
         assertTrue(NameValidator.IsValidName("Erstname Zweitname"), "Name 'Erstname Zweitname' should be valid.");
-        System.out.println("Valid names tests passed.");
     }
 
     @Test
-    void testInvalidNamesLength() {
+    void testInvalidNamesLength() 
+    {
         assertFalse(NameValidator.IsValidName("Jo"), "Name 'Jo' should be invalid (too short).");
         assertFalse(NameValidator.IsValidName("Viel zu langer Name lalalallalalalalla"), 
                     "Name 'Viel zu langer Name lalalallalalalalla' should be invalid (too long).");
-        System.out.println("Invalid length tests passed.");
     }
 
     @Test
-    void testInvalidNamesCharacterTypes() {
+    void testInvalidNamesCharacterTypes() 
+    {
         assertFalse(NameValidator.IsValidName("Max123"), "Name 'Max123' should be invalid (contains numbers).");
         assertFalse(NameValidator.IsValidName("Max@"), "Name 'Max@' should be invalid (contains special characters).");
         assertFalse(NameValidator.IsValidName("Max-"), "Name 'Max-' should be invalid (contains special characters).");
         assertFalse(NameValidator.IsValidName("1234"), "Name '1234' should be invalid (only numbers).");
-        System.out.println("Invalid character types tests passed.");
     }
 
     @Test
-    void testInvalidNamesEdgeCases() {
+    void testInvalidNamesEdgeCases() 
+    {
         assertFalse(NameValidator.IsValidName(" John "), "Name ' John ' should be invalid (leading/trailing spaces).");
         assertFalse(NameValidator.IsValidName("          "), "Name with only spaces should be invalid.");
         assertFalse(NameValidator.IsValidName("John  "), "Name 'John  ' should be invalid (trailing spaces).");
-        System.out.println("Edge cases tests passed.");
 	    }
 }
