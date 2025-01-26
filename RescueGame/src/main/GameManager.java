@@ -144,19 +144,15 @@ public class GameManager extends JFrame
     		throw new IndexOutOfBoundsException(String.format("x = %d, y = %d are not valid coordinates", x, y));
     	}
     	
-    	resetGridColors();
     	if(selectedX == x && selectedY == y)
     	{
         		markedFields[x][y] = !markedFields[x][y];
-        		updateFieldColor(x,y);
     	}
-    	else
-    	{
-        	selectedX = x;
-        	selectedY = y;
-        	UiManager.instance.setVisualCoordinates(x, y);
-    		updateFieldColor(x,y);
-    	}
+
+    	selectedX = x;
+    	selectedY = y;
+    	UiManager.instance.setVisualCoordinates(x, y);
+    	resetGridColors();
     }
     
     /**
@@ -194,7 +190,11 @@ public class GameManager extends JFrame
     		throw new IndexOutOfBoundsException(String.format("x = %d, y = %d are not valid coordinates", x, y));
     	}
     	
-    	if(x == selectedX && y == selectedY)
+    	if(x == selectedX && y == selectedY & markedFields[x][y])
+    	{
+    		changeFieldColor(x, y, GameColors.mixedColor);
+    	}
+    	else if(x == selectedX && y == selectedY)
     	{
     		changeFieldColor(x, y, GameColors.selectedColor);
     	}

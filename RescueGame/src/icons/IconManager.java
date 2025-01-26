@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 public class IconManager 
 {
 	public final static ImageIcon satellite1 = new ImageIcon(IconManager.class.getResource("/icons/satellite1.png"));
-	public final static ImageIcon fisher1 = new ImageIcon(IconManager.class.getResource("/icons/satellite1.png"));
+	public final static ImageIcon fisher1 = new ImageIcon(IconManager.class.getResource("/icons/fisher1.png"));
 	public final static ImageIcon smallShipv1 = new ImageIcon(IconManager.class.getResource("/icons/smallShipv1.png"));
 	public final static ImageIcon smallShipv2= new ImageIcon(IconManager.class.getResource("/icons/smallShipv2.png"));
 	public final static ImageIcon bigPlane1 = new ImageIcon(IconManager.class.getResource("/icons/big plane1.png"));

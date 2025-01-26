@@ -153,6 +153,9 @@ public abstract class Asset
         	Vehicle vehicle = (Vehicle)this;
             vehicle.action();
         }
+        
+    	GameManager.instance.selectedX = -1;
+    	GameManager.instance.selectedY = -1;
     }
     
     /**

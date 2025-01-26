@@ -10,4 +10,5 @@ public class GameColors
     public static Color foundColor = new Color(58, 18, 18);
     public static Color rescuedColor = new Color(18, 58, 22);
     public static Color markedColor = new Color(255, 255, 22);
+    public static Color mixedColor = new Color(0, 150, 200);
 }
