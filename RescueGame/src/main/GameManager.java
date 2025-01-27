@@ -8,12 +8,6 @@ import ui_package.UiManager;
 import java.awt.*;
 import java.util.*;
 
-/**
- * 
- */
-/**
- * 
- */
 public class GameManager extends JFrame 
 {
 	private static final long serialVersionUID = 1L;
@@ -151,7 +145,7 @@ public class GameManager extends JFrame
 
     	selectedX = x;
     	selectedY = y;
-    	UiManager.instance.setVisualCoordinates(x, y);
+    	UiManager.instance.setVisualCoordinates(Integer.toString(x), Integer.toString(y));
     	resetGridColors();
     }
     
@@ -246,7 +240,21 @@ public class GameManager extends JFrame
     	
         gameFields[x][y].setBackground(color);
     }
-       
+    
+    public void stopAllThreads() 
+    {
+        for (Thread thread : activeThreads) 
+        {
+            if (thread != null && thread.isAlive()) 
+            {
+                thread.interrupt(); 
+            }
+        }
+        
+        activeThreads.removeIf(thread -> !thread.isAlive());
+    }
+
+    
     public static void main(String[] args)
     {
         Font mainFont = new Font("Arial", Font.BOLD, 12);

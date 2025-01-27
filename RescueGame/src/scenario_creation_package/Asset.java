@@ -156,6 +156,7 @@ public abstract class Asset
         
     	GameManager.instance.selectedX = -1;
     	GameManager.instance.selectedY = -1;
+    	UiManager.instance.setVisualCoordinates("X", "Y");
     }
     
     /**

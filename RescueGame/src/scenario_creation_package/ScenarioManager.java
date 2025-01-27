@@ -88,7 +88,7 @@ public class ScenarioManager
 		Vehicle MH65D = new Vehicle ("MH-65D", 5, 6, new Step[] {new Step(2, 7, false)}, true, "Coast Guard helicopter with high tech search equipment.", IconManager.heli2);
 		Vehicle HC144 = new Vehicle("HC-144A", 5, 4, new Step[] {new Step(2, 30, false)}, false, "Coast Guard cargo plane.", IconManager.bigPlane3, true, false);
 		Vehicle LegendClass = new Vehicle("Legend-class", 3, 5, new Step[] {new Step(5, 5, false)}, true, "Coast Guard ship with high tech search equipment.", IconManager.bigShip2);
-		Vehicle USCGCEagle = new Vehicle("USCGC Eagl", 2, 4, new Step[] {new Step(7, 7, false)}, true, "Coast Guard Academy ship. Full of cadets, most of them on their first mission", IconManager.bigShip3);
+		Vehicle USCGCEagle = new Vehicle("USCGC Eagle", 2, 4, new Step[] {new Step(7, 7, false)}, true, "Coast Guard Academy ship. Full of cadets, most of them on their first mission", IconManager.bigShip3);
 		Vehicle K1200 = new Vehicle("K-Max K-1200", 3, 8, new Step[] {new Step(3, 3, false)}, true, "Aerial firefighting helicopter.", IconManager.heli3);
 		Vehicle rescueShip = new Vehicle ("Large Rescue Ship", 3, 3, new Step[] {new Step(5, 2, false)}, true, "Large Ship specialized on rescue operations. Rescues survivors.", IconManager.bigShip1);
 		Sonar sateliteScan = new Sonar ("Satelite Scan", 2, 4, 0f, "Uses thermal imaging to accuratly find survivors in an area. Green = hot, Red = cold", IconManager.satellite1);

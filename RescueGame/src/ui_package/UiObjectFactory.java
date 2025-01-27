@@ -547,10 +547,37 @@ public abstract class UiObjectFactory
         int height = assetWindow.getPreferredSize().height + 15;
 
         assetWindow.setMaximumSize(new Dimension(width, height));
-        assetWindow.setPreferredSize(new Dimension(width, height));
+        assetWindow.setPreferredSize(standardButtonSize);
         assetWindow.setBorder(BorderFactory.createLineBorder(Color.black, 1));
 
         return assetWindow;
     }
+    
+    public JButton createLeaveGameButton() 
+    {
+        JButton quitButton = new JButton("Quit Game");
+        quitButton.setSize(standardButtonSize);
+        quitButton.setOpaque(true); 
+        quitButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); 
+        quitButton.addActionListener((ActionEvent e) -> 
+        {
+            System.exit(0);
+        });
+        return quitButton;
+    }
 
+    public JButton createMainMenuButton()
+    {
+        JButton returnToMainMenuButton = new JButton("Main Menu");
+        returnToMainMenuButton.setPreferredSize(standardButtonSize); 
+        returnToMainMenuButton.setOpaque(true);
+        returnToMainMenuButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        returnToMainMenuButton.addActionListener((ActionEvent e) -> 
+        {
+            UiManager.instance.createMainMenu();
+        });
+        return returnToMainMenuButton;
+    }
+
+    
 }

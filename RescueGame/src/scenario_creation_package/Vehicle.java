@@ -106,7 +106,6 @@ public class Vehicle extends Asset
                 }
             } catch (InterruptedException e) 
             {
-                e.printStackTrace();
             } finally 
             {
                 IconManager.INSTANCE.removeIcon(vehicleLabel);

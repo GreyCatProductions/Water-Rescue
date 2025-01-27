@@ -46,8 +46,12 @@ public class Sonar extends Asset {
         this.maxNoise = maxNoise;
     }
     
+    private int x_memory;
+    private int y_memory;
     protected void action()
     {
+    	x_memory = GameManager.instance.selectedX;
+    	y_memory = GameManager.instance.selectedY;
     	placeIcon();
     	Thread thread = new Thread(sonarThread);
     	thread.start();
@@ -55,11 +59,11 @@ public class Sonar extends Asset {
     
     private Thread sonarThread = new Thread(() -> 
     {
+        final int fixed_x = x_memory;;
+        final int fixed_y = y_memory;
     	Random random = new Random();
         int scenarioSize = GameManager.chosenScenario.size;
         int[][] distanceMatrix = new int[scenarioSize][scenarioSize];
-        int fixed_x = GameManager.instance.selectedX;
-        int fixed_y = GameManager.instance.selectedY;
         
         for (int i = 0; i < scenarioSize; i++) 
         {
@@ -160,14 +164,13 @@ public class Sonar extends Asset {
             Thread.sleep(1000);
     	}catch (InterruptedException e) 
         {
-            e.printStackTrace();
         } 
 	});
     
     private void placeIcon()
     {
-        int fixed_x = GameManager.instance.selectedX;
-        int fixed_y = GameManager.instance.selectedY;
+        final int fixed_x = GameManager.instance.selectedX;
+        final int fixed_y = GameManager.instance.selectedY;
         JButton[][] gameFields = GameManager.instance.gameFields;
         
 		JLabel solarIcon = new JLabel();

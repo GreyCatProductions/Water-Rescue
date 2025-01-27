@@ -47,7 +47,20 @@ public class UiManager extends UiObjectFactory
     public void createMainMenu()
     {
         GameManager.frame.getContentPane().removeAll(); 
+        GameManager.instance.stopAllThreads();
 
+	    JPanel verticalPanel = new JPanel();
+	    verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+
+	    verticalPanel.setOpaque(false);
+
+	    JButton leaveGameButton = createLeaveGameButton();
+	    verticalPanel.add(leaveGameButton);
+
+	    verticalPanel.setSize(verticalPanel.getPreferredSize());
+
+	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
+        
         JPanel centerPanel = createCenterPanel();
         
         JPanel titlePanel = createTitlePanel();
@@ -108,7 +121,26 @@ public class UiManager extends UiObjectFactory
 	public void createLevelSelection()
 	{
 	    GameManager.frame.getContentPane().removeAll();
-	
+        GameManager.instance.stopAllThreads();
+        
+	    JPanel verticalPanel = new JPanel();
+	    verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+
+	    verticalPanel.setOpaque(false);
+
+	    JButton leaveGameButton = createLeaveGameButton();
+	    verticalPanel.add(leaveGameButton);
+
+	    verticalPanel.add(Box.createVerticalStrut(5));
+	    
+	    JButton mainMenuButton = createMainMenuButton();
+	    verticalPanel.add(mainMenuButton);
+
+	    verticalPanel.setSize(verticalPanel.getPreferredSize());
+
+	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
+
+        
 	    JPanel centerPanel = createCenterPanel();
 	
 	    GridBagConstraints gbc = new GridBagConstraints();
@@ -206,6 +238,26 @@ public class UiManager extends UiObjectFactory
     		throw new IllegalArgumentException("parameter 'scenario' must not be null!");
     	}
     	
+	    JPanel verticalPanel = new JPanel();
+	    verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+
+	    verticalPanel.setOpaque(false);
+
+	    JButton leaveGameButton = createLeaveGameButton();
+	    verticalPanel.add(leaveGameButton);
+
+	    verticalPanel.add(Box.createVerticalStrut(5));
+	    
+	    JButton mainMenuButton = createMainMenuButton();
+	    verticalPanel.add(mainMenuButton);
+
+	    verticalPanel.setSize(verticalPanel.getPreferredSize());
+
+	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
+
+        
+        GameManager.frame.add(verticalPanel);
+    	
         int eastPanelWidth = (int)(GameManager.frame.getWidth() * 0.2f);
         JPanel eastPanel = createEastPanel(eastPanelWidth);
         JPanel mainGamePanel = createMainGamePanel(scenario.size);
@@ -236,10 +288,10 @@ public class UiManager extends UiObjectFactory
      * @param x x coordinate value to set
      * @param y y coordinate value to set
      */
-    public void setVisualCoordinates(int x, int y)
+    public void setVisualCoordinates(String x, String y)
     {
-    	xCorVisual.setText(Integer.toString(x));
-    	yCorVisual.setText(Integer.toString(y));
+    	xCorVisual.setText(x);
+    	yCorVisual.setText(y);
     }
     
     /**
