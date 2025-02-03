@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -125,15 +126,27 @@ public abstract class UiObjectFactory
         return logoContainer;
 	}
 	
-	protected JPanel createCredits()
+	protected JPanel createCreditsPanel()
 	{
-		JPanel creditsPanel = new JPanel();
-        creditsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
-        JLabel credits = new JLabel("MADE BY OLEG SHAPOVALOV");
-        credits.setForeground(Color.WHITE);
-        creditsPanel.add(credits);
-        creditsPanel.setBackground(Color.BLACK);
-        return creditsPanel;
+		JButton creditsButton = createCreditsButton();
+		
+		JPanel buttonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		buttonContainer.setOpaque(false);
+		buttonContainer.add(creditsButton);
+		return buttonContainer;
+	}
+	
+	private JButton createCreditsButton()
+	{
+		JButton creditsButton = new JButton("CREDITS");
+		creditsButton.setSize(standardButtonSize);
+		creditsButton.setOpaque(true); 
+		creditsButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); 
+		creditsButton.addActionListener((ActionEvent e) -> 
+        {
+            JOptionPane.showMessageDialog(GameManager.frame, "GAME WAS CREATED BY OLEG SHAPOVALOV AND BATU CAKIR");
+        });
+        return creditsButton;
 	}
 	
 	//Level Selection Menu Objects

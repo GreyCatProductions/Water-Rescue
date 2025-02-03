@@ -60,6 +60,9 @@ public class UiManager extends UiObjectFactory
 	    verticalPanel.setSize(verticalPanel.getPreferredSize());
 
 	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
+	    
+	    JPanel creditsButtonPanel = createCreditsPanel();
+	    GameManager.frame.add(creditsButtonPanel, BorderLayout.SOUTH);
         
         JPanel centerPanel = createCenterPanel();
         
@@ -106,15 +109,12 @@ public class UiManager extends UiObjectFactory
         titleMenuSplitter.add(objectContainer);
         
         centerPanel.add(titleMenuSplitter);
-        
-        JPanel creditsPanel = createCredits();
 
-        GameManager.frame.add(creditsPanel, BorderLayout.SOUTH);
         GameManager.frame.add(centerPanel, BorderLayout.CENTER);
         GameManager.frame.revalidate(); 
         GameManager.frame.repaint();   
     }
-
+    
     /**
      * Clears the main frame. Draws the level selection menu
      */
@@ -307,7 +307,8 @@ public class UiManager extends UiObjectFactory
     public void createEndGameDialog(int survivorsSaved) 
     {
     	int[] stats = SaveLoadManager.getUserHighscores(chosenUserName);
-    	stats[ScenarioManager.getIndexOfScenario(GameManager.chosenScenario)] = survivorsSaved;
+    	int scenario = ScenarioManager.getIndexOfScenario(GameManager.chosenScenario);
+    	stats[scenario] = Math.max(stats[scenario], survivorsSaved);
     	SaveLoadManager.saveStats(chosenUserName, stats);
     	
     	String title;
