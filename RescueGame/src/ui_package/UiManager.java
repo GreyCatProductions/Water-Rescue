@@ -34,11 +34,79 @@ public class UiManager extends UiObjectFactory
 {    
     public static UiManager instance;
     
-    private String chosenUserName;
+    public String chosenUserName;
     
     public UiManager()
     {
     	instance = this;
+    }
+    
+    /**
+     * Clears the frame. Creates the login menu
+     */
+    public void createLoginMenu()
+    {
+        GameManager.frame.getContentPane().removeAll(); 
+        GameManager.instance.stopAllThreads();
+
+	    JPanel verticalPanel = new JPanel();
+	    verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+
+	    verticalPanel.setOpaque(false);
+
+	    JButton leaveGameButton = createLeaveGameButton();
+	    verticalPanel.add(leaveGameButton);
+
+	    verticalPanel.setSize(verticalPanel.getPreferredSize());
+
+	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
+        
+        JPanel centerPanel = createCenterPanel();
+        
+        JLabel enterNameInstruction = createEnterNameInstruction();
+        
+        JPanel objectContainer = createObjectContainer();
+         
+        JTextField enterNameField = createEnterNameField();
+        
+        JButton loginButton = loginButton();
+        loginButton.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+            	chosenUserName = enterNameField.getText(); 
+                if (NameValidator.IsValidName(chosenUserName)) 
+                {
+                    JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + chosenUserName);
+	                createMainMenu();
+                }
+                else
+                {
+                	JOptionPane.showMessageDialog(GameManager.frame, "Enter a normal name. \n-3-20 characters\n-contain no numbers\n-no leading/ending spaces.");
+                	enterNameField.setText("");
+                }
+            }
+        });
+
+        JPanel titleMenuSplitter = createTitleMenuSpliter();
+        
+        JPanel logoContainer = createLogo();
+        
+        objectContainer.add(enterNameInstruction);
+        objectContainer.add(Box.createVerticalStrut(10)); 
+        objectContainer.add(enterNameField);
+        objectContainer.add(Box.createVerticalStrut(10)); 
+        objectContainer.add(loginButton);
+       
+        titleMenuSplitter.add(logoContainer);
+        titleMenuSplitter.add(objectContainer);
+        
+        centerPanel.add(titleMenuSplitter);
+
+        GameManager.frame.add(centerPanel, BorderLayout.CENTER);
+        GameManager.frame.revalidate(); 
+        GameManager.frame.repaint();   
     }
     
     /**
@@ -61,48 +129,43 @@ public class UiManager extends UiObjectFactory
 
 	    GameManager.frame.add(verticalPanel, BorderLayout.NORTH);
 	    
-	    JPanel creditsButtonPanel = createCreditsPanel();
-	    GameManager.frame.add(creditsButtonPanel, BorderLayout.SOUTH);
+	    JButton creditsButton = createCreditsButton();
         
         JPanel centerPanel = createCenterPanel();
         
         JPanel titlePanel = createTitlePanel();
         
-        JLabel enterNameInstruction = createEnterNameInstruction();
-        
         JPanel objectContainer = createObjectContainer();
-         
-        JTextField enterNameField = createEnterNameField();
-        
+
         JButton startGameButton = createStartGameButton();
         startGameButton.addActionListener(new ActionListener() 
         {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-            	chosenUserName = enterNameField.getText(); 
-                if (NameValidator.IsValidName(chosenUserName)) 
-                {
-                    JOptionPane.showMessageDialog(GameManager.frame, "Playing as: " + chosenUserName);
-	                createLevelSelection();
-                }
-                else
-                {
-                	JOptionPane.showMessageDialog(GameManager.frame, "Enter a normal name. \n-3-20 characters\n-contain no numbers\n-no leading/ending spaces.");
-                	enterNameField.setText("");
-                }
+                createLevelSelection();
             }
         });
+        
+        JButton changeUserButton = createChangeUserButton();
+        changeUserButton.addActionListener((ActionEvent e) -> 
+        {
+            createLoginMenu();
+        });
+        
+        JPanel fieldManualPanel = createTutorialPanel();
 
         JPanel titleMenuSplitter = createTitleMenuSpliter();
         
         JPanel logoContainer = createLogo();
         
-        objectContainer.add(enterNameInstruction);
-        objectContainer.add(Box.createVerticalStrut(10)); 
-        objectContainer.add(enterNameField);
-        objectContainer.add(Box.createVerticalStrut(10)); 
         objectContainer.add(startGameButton);
+        objectContainer.add(Box.createVerticalStrut(5));
+        objectContainer.add(creditsButton);
+        objectContainer.add(Box.createVerticalStrut(5));
+        objectContainer.add(changeUserButton);
+        objectContainer.add(Box.createVerticalStrut(5));
+        objectContainer.add(fieldManualPanel);
        
         titleMenuSplitter.add(titlePanel); 
         titleMenuSplitter.add(logoContainer);
@@ -271,10 +334,8 @@ public class UiManager extends UiObjectFactory
         bottomPanelContainer.setBackground(Color.GRAY);
         
         JPanel coordinatesPanel = createCoordinatesPanel();
-        JPanel fieldManualPanel = createTutorialPanel();
         
         bottomPanelContainer.add(coordinatesPanel);
-        bottomPanelContainer.add(fieldManualPanel);
         
         eastPanel.add(assetPanel, BorderLayout.CENTER);
         eastPanel.add(bottomPanelContainer, BorderLayout.SOUTH);

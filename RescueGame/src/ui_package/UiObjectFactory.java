@@ -41,6 +41,15 @@ public abstract class UiObjectFactory
 	public JPanel assetPanel;
 	public JPanel iconPanel;
 	
+	//Login Menu Objects
+	protected JButton loginButton()
+	{
+        JButton loginButton = new JButton("Login");
+        loginButton.setPreferredSize(standardButtonSize);
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return loginButton;
+	}
+	
 	//Main Menu Objects
 	protected JPanel createCenterPanel()
 	{
@@ -98,7 +107,11 @@ public abstract class UiObjectFactory
 	protected JButton createStartGameButton()
 	{
         JButton startGameButton = new JButton("Start Game");
+        startGameButton.setMaximumSize(standardButtonSize);
+        startGameButton.setMinimumSize(standardButtonSize);
         startGameButton.setPreferredSize(standardButtonSize);
+        startGameButton.setOpaque(true); 
+        startGameButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); 
         startGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         return startGameButton;
 	}
@@ -126,27 +139,32 @@ public abstract class UiObjectFactory
         return logoContainer;
 	}
 	
-	protected JPanel createCreditsPanel()
+	protected JButton createCreditsButton()
 	{
-		JButton creditsButton = createCreditsButton();
-		
-		JPanel buttonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		buttonContainer.setOpaque(false);
-		buttonContainer.add(creditsButton);
-		return buttonContainer;
-	}
-	
-	private JButton createCreditsButton()
-	{
-		JButton creditsButton = new JButton("CREDITS");
-		creditsButton.setSize(standardButtonSize);
+		JButton creditsButton = new JButton("Credits");
+		creditsButton.setMaximumSize(standardButtonSize);
+		creditsButton.setMinimumSize(standardButtonSize);
+		creditsButton.setPreferredSize(standardButtonSize);
 		creditsButton.setOpaque(true); 
 		creditsButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); 
+		creditsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creditsButton.addActionListener((ActionEvent e) -> 
         {
             JOptionPane.showMessageDialog(GameManager.frame, "GAME WAS CREATED BY OLEG SHAPOVALOV AND BATU CAKIR");
         });
         return creditsButton;
+	}
+	
+	protected JButton createChangeUserButton()
+	{
+		JButton changeUserButton = new JButton("Change User");
+		changeUserButton.setMaximumSize(standardButtonSize);
+		changeUserButton.setMinimumSize(standardButtonSize);
+		changeUserButton.setPreferredSize(standardButtonSize);
+		changeUserButton.setOpaque(true); 
+		changeUserButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); 
+		changeUserButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return changeUserButton;
 	}
 	
 	//Level Selection Menu Objects
@@ -244,7 +262,7 @@ public abstract class UiObjectFactory
     {
     	JPanel coordinatesPanel = new JPanel();
     	coordinatesPanel.setLayout(new BorderLayout());
-    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getMaximumSize().width, 100));
+    	coordinatesPanel.setPreferredSize(new Dimension(coordinatesPanel.getMaximumSize().width, 80));
     	JLabel topText = new JLabel("SELECTED COORDINATES");
         topText.setFont(new Font("Arial", Font.BOLD, 16)); 
 
@@ -291,7 +309,8 @@ public abstract class UiObjectFactory
     {
         JPanel tutorialPanel = new JPanel();
         tutorialPanel.setLayout(new BorderLayout());
-        tutorialPanel.setPreferredSize(new Dimension(tutorialPanel.getMaximumSize().width, 100));
+        Dimension dim = new Dimension(tutorialPanel.getPreferredSize().width, 100);
+        tutorialPanel.setPreferredSize(dim);
         tutorialPanel.setBackground(Color.GRAY);
         tutorialPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
@@ -366,7 +385,6 @@ public abstract class UiObjectFactory
         
 		return button;
     }
-    
     
     private JButton createVehicleExplainButton()
     {
@@ -591,6 +609,4 @@ public abstract class UiObjectFactory
         });
         return returnToMainMenuButton;
     }
-
-    
 }

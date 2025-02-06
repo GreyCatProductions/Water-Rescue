@@ -51,7 +51,7 @@ public class GameManager extends JFrame
 	        frame.setLayout(new BorderLayout());;
 	        frame.setIconImage(IconManager.mainGameLogo.getImage());
 
-	        UiManager.instance.createMainMenu();
+	        UiManager.instance.createLoginMenu();
 	        setVisible(true);
     	}
     }
