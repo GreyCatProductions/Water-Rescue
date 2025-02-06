@@ -176,6 +176,9 @@ public class UiManager extends UiObjectFactory
 	
 	    ScenarioManager.createScenarios();
 	    
+    	SaveLoadManager.createAxelMuster();
+    	SaveLoadManager.createKimBeispiel();
+	    
 	    int[] highscores = SaveLoadManager.getUserHighscores(chosenUserName);
 	    
 	    for(int i = 0; i < ScenarioManager.getAmountOfScenarios(); i++) 

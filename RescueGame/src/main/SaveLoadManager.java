@@ -83,7 +83,8 @@ public class SaveLoadManager
         Map<String, int[]> data = new HashMap<>();
         File file = new File(filePath);
 
-        if (!file.exists()) {
+        if (!file.exists()) 
+        {
             System.out.println("No save file found. Returning empty data.");
             return data;
         }
@@ -117,5 +118,29 @@ public class SaveLoadManager
             stats[i] = Integer.parseInt(statParts[i]);
         }
         return stats;
+    }
+
+    public static void createAxelMuster()
+    {
+    	int[] max_highscores = new int [ScenarioManager.getAmountOfScenarios()];
+    	
+    	for(int i = 0; i < ScenarioManager.getAmountOfScenarios(); i++)
+    	{
+    		max_highscores[i] = ScenarioManager.getScenario(i).survivors;
+    	}
+    	
+    	saveStats("Axel Muster", max_highscores);
+    }
+    
+    public static void createKimBeispiel()
+    {
+    	int[] single_scores = new int [ScenarioManager.getAmountOfScenarios()];
+    	
+    	for(int i = 0; i < ScenarioManager.getAmountOfScenarios(); i++)
+    	{
+    		single_scores[i] = 1;
+    	}
+    	
+    	saveStats("Kim Beispiel", single_scores);
     }
 }

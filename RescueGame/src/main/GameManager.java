@@ -50,7 +50,7 @@ public class GameManager extends JFrame
 	        frame.getContentPane().setBackground(Color.black);
 	        frame.setLayout(new BorderLayout());;
 	        frame.setIconImage(IconManager.mainGameLogo.getImage());
-	    
+
 	        UiManager.instance.createMainMenu();
 	        setVisible(true);
     	}
